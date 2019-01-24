@@ -47,12 +47,12 @@ class City:
 class Route:
     def __init__(self, ordered_cities):
         '''The route the salesman travels through the cities'''
-        self.cities = ordered_cities
+        self.genes = ordered_cities
 
 
     def randomize(self):
         '''Randomizes the route'''
-        self.cities = random.sample(self.cities, len(self.cities))
+        self.genes = random.sample(self.genes, len(self.genes))
         return self
 
 
@@ -60,9 +60,9 @@ class Route:
     def distance(self):
         '''The distance of this route'''
         d = 0
-        for i in range(len(self.cities)-1):
-            d += self.cities[i].distance_to(self.cities[i+1])
-        d += self.cities[-1].distance_to(self.cities[0])
+        for i in range(len(self.genes)-1):
+            d += self.genes[i].distance_to(self.genes[i+1])
+        d += self.genes[-1].distance_to(self.genes[0])
         return d
 
 
@@ -75,13 +75,13 @@ class Route:
     @property
     def x(self):
         '''returns x as a list of city data to plot'''
-        return [city.x for city in self.cities] + [self.cities[0].x]
+        return [city.x for city in self.genes] + [self.genes[0].x]
 
 
     @property
     def y(self):
         '''returns y as a list of city data to plot'''
-        return [city.y for city in self.cities] + [self.cities[0].y]
+        return [city.y for city in self.genes] + [self.genes[0].y]
 
 
     def serialize(self):
@@ -90,7 +90,7 @@ class Route:
 
 
     def __len__(self):
-        return len(self.cities)
+        return len(self.genes)
 
 
     def __str__(self):
@@ -98,65 +98,64 @@ class Route:
 
 
     def __repr__(self):
-        return [c for c in self.cities]
+        return [c for c in self.genes]
 
 
 class Population:
-    def __init__(self, routes=[]):
+    def __init__(self, routes:list=[]):
         '''The population of possible routes the salesman can take
         param cities list: list of cities for the route'''
-        #self.cities = cities
-        self.routes = routes
+        self.individuals = routes
 
 
     def randomize(self, cities, size):
         '''Randomizes (resets) the population of routes
         param size int: size of population'''
-        self.routes = []
+        self.individuals = []
         for i in range(size):
             newroute = Route(cities).randomize()
-            self.routes.append(newroute)
+            self.individuals.append(newroute)
         return self
 
 
     def random_individual(self):
         '''Returns a random individual from the population'''
-        return random.choice(self.routes)
+        return random.choice(self.individuals)
 
 
     def rank(self):
         '''Ranks the routes within this population'''
-        self.routes.sort(key=operator.attrgetter('fitness'), reverse=True)
+        self.individuals.sort(key=operator.attrgetter('fitness'), reverse=True)
 
 
     @property
     def ranked(self):
         '''Returns the ranked routes, but doesn't change the internal state'''
-        return sorted(self.routes, key=operator.attrgetter('fitness'), reverse=True)
+        return sorted(self.individuals, key=operator.attrgetter('fitness'), reverse=True)
 
 
     @property
-    def cities(self):
+    def genes(self):
         '''Returns a copied list of the cities in the first route'''
-        return self.routes[0].cities.copy()
+        return self.individuals[0].genes.copy()
 
 
     @property
     def best_individual(self):
         '''Returns the individual route with the best fitness in this population'''
-        return max(self.routes, key=operator.attrgetter('fitness'))
+        return max(self.individuals, key=operator.attrgetter('fitness'))
 
 
     @property
     def max_fitness(self):
         '''Finds the maximum fitness route of the population'''
-        return max(self.routes, key=operator.attrgetter('fitness')).fitness
+        return max(self.individuals, key=operator.attrgetter('fitness')).fitness
 
 
     @property
     def min_fitness(self):
         '''Finds the minimum fitness route of the population'''
-        return min(self.routes, key=operator.attrgetter('fitness')).fitness
+        return min(self.individuals, key=operator.attrgetter('fitness')).fitness
 
 
     def serialize(self):
@@ -165,23 +164,23 @@ class Population:
 
 
     def __repr__(self):
-        return f'Pop; routes: {len(self.routes)}; cities: {len(self.routes[0])}'
+        return f'Pop; routes: {len(self.individuals)}; cities: {len(self.individuals[0])}'
 
 
 class Crosser:
     def __init__(self, parents, elitesize):
         '''Crosses the parents over to create children'''
         self.parents = parents
-        self.all_cities = parents.cities
+        self.all_cities = parents.genes
         self.elitesize = elitesize
 
 
     def run(self):
         '''Runs the crossover method on all the parents'''
         children:Route = []
-        for i in range(len(self.parents.routes) - self.elitesize):
+        for i in range(len(self.parents.individuals) - self.elitesize):
             children.append(
-                self.cross(self.parents.routes[i], self.parents.routes[-i-1])
+                self.cross(self.parents.individuals[i], self.parents.individuals[-i-1])
                 )
 
         children.extend(self.parents.ranked[:self.elitesize])
@@ -195,13 +194,13 @@ class Crosser:
         
         child = []
 
-        r1 = random.randint(0, len(p1.cities))
-        r2 = random.randint(0, len(p1.cities))
+        r1 = random.randint(0, len(p1.genes))
+        r2 = random.randint(0, len(p1.genes))
 
         start = min(r1, r2)
         stop = max(r1, r2)
 
-        cross_segment = p1.cities[start:stop]
+        cross_segment = p1.genes[start:stop]
         needed_cities = [city for city in self.all_cities if city not in cross_segment]
 
         child.extend(cross_segment)
@@ -224,26 +223,25 @@ class Mutator:
     
     def run(self):
         '''Runs the mutator'''
-        for child in self.children.routes:
+        for child in self.children.individuals:
             self.mutate2(child)
-        return Population(self.children.routes)
+        return Population(self.children.individuals)
 
 
     def mutate(self, child):
         '''Mutates each gene in child with a chance of self.chance'''
-        for i in range(len(child.cities)):
+        for i in range(len(child.genes)):
             if random.random() < self.chance:
-                print('mutated')
-                r = random.randint(0, len(child.cities)-1)
-                child.cities[i], child.cities[r] = child.cities[r], child.cities[i]
+                r = random.randint(0, len(child.genes)-1)
+                child.genes[i], child.genes[r] = child.genes[r], child.genes[i]
 
 
     def mutate2(self, child):
         '''Mutates each child with a chance of self.chance'''
         if random.random() < self.chance:
-            A = random.randint(0, len(child.cities)-1)
-            B = random.randint(0, len(child.cities)-1)
-            child.cities[A], child.cities[B] = child.cities[B], child.cities[A]
+            A = random.randint(0, len(child.genes)-1)
+            B = random.randint(0, len(child.genes)-1)
+            child.genes[A], child.genes[B] = child.genes[B], child.genes[A]
 
 class Selector:   
     def __init__(self, population, elitesize):
@@ -254,13 +252,13 @@ class Selector:
 
     def run(self):
         '''Runs the selector'''
-        parent_routes = self.stochastic_acceptance_selection()
+        parent_individuals = self.stochastic_acceptance_selection()
 
         # elitism
         self.population.rank()
-        parent_routes.extend(self.population.routes[:self.elitesize])
+        parent_individuals.extend(self.population.individuals[:self.elitesize])
 
-        return Population(parent_routes)
+        return Population(parent_individuals)
 
                 
     def tournament_selection(self):
@@ -281,7 +279,7 @@ class Selector:
             probality = (individual.fitness - min_fitness) / max_fitness
             if random.random() <= probality:
                 parents.append(individual)
-                if len(parents) == len(self.population.routes) - self.elitesize:
+                if len(parents) == len(self.population.individuals) - self.elitesize:
                     complete = True
         return parents
 
@@ -368,12 +366,12 @@ def run_new_ga():
                      mutationrate=0.01, 
                      generations=300)
     ga.run()
-    ga.save('run1_20c300g.json')
+    ga.save('savedata\\run1_20c300g.json')
     ga.plot()
 
 
 if __name__ == '__main__':
 
-    read_ga_file('assets\\example20c300g.json')
-    #run_new_ga()
+    #read_ga_file('assets\\example20c300g.json')
+    run_new_ga()
     
