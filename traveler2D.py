@@ -366,7 +366,7 @@ def decode_ga(dct):
     for route in dct['best_routes']:
         r = Route([])
         best_routes.append(r)
-        for city in route['genes']:
+        for city in route['_genes']:
             r.genes.append(City(city['x'], city['y']))
 
     #ga = GeneticAlgorithm(cities, populationsize, elitesize, mutationrate, generations)
@@ -391,16 +391,16 @@ def run_new_ga():
     ga = GeneticAlgorithm(cities=cities, 
                      populationsize=100, 
                      elitesize=20, 
-                     tsize=4, 
+                     tsize=2, 
                      mutationrate=0.01, 
                      generations=300)
     ga.run()
-    ga.save('savedata\\run5_tournamentselection.json')
+    ga.save('savedata\\run6_tournamentselection.json')
     ga.plot()
 
 
 if __name__ == '__main__':
 
-    #read_ga_file('savedata\\run1_tournamentselection.json')
+    #read_ga_file('savedata\\run3_tournamentselection.json')
     run_new_ga()
     

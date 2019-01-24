@@ -49,7 +49,6 @@ def plotroutes2(routes):
 def plotroutes(routes):
     '''plots a list of routes as an with user controls'''
     fig, (ax1, ax2) = plt.subplots(2, 1)
-    plt.subplots_adjust(bottom=0.2, left=0.15)
 
     title = plt.text(0.5, 1.1, 'Generation 0',
                     bbox={'facecolor':'w', 'alpha':0.5, 'pad':5},
@@ -85,10 +84,31 @@ def plotroutes(routes):
         return None
     
     axcolor = 'lightgoldenrodyellow'
-    axgen = plt.axes([0.15,0.05,0.75,0.03], facecolor=axcolor)
-    sgen = Slider(axgen, 'Generation', valmin=0, valmax=len(gens)-1, valinit=0) #valstep =1)
+
+    box = axes2figbox(ax2, fig)
+
+    axgen = plt.axes(box, facecolor=axcolor, alpha=0.5, visible=False)
+
+    sgen = Slider(axgen, '', valmin=0, valmax=len(gens)-1, valinit=0) #valstep =1)
+    sgen.valtext.set_visible(False)
     sgen.on_changed(update)
 
     plt.show()
 
     
+def axes2figbox(ax, fig):
+    '''Returns the axis location in figure coordinates
+    [left, bottom, width, height]'''
+
+    # npbox is [ [left, bottom], [right, top] ]
+    npbox = fig.transFigure.inverted().transform(ax.patch.get_extents())
+
+    left = npbox[0][0]
+    bottom = npbox[0][1]
+    right = npbox[1][0]
+    top = npbox[1][1]
+
+    width = right-left
+    height = top-bottom
+
+    return [left, bottom, width, height]
