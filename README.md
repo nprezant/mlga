@@ -14,7 +14,7 @@ A genetic algorithm solution to the traveling salesman problem
 
 ## Example
 
-![Example Image](assets\example20c300g.png)
+![Example Image](assets/example20c300g.png)
 
 
 
