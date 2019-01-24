@@ -47,13 +47,25 @@ class City:
 class Route:
     def __init__(self, ordered_cities):
         '''The route the salesman travels through the cities'''
-        self.genes = ordered_cities
+        self._genes = ordered_cities
+        self._fitness = None
 
 
     def randomize(self):
         '''Randomizes the route'''
-        self.genes = random.sample(self.genes, len(self.genes))
+        self._genes = random.sample(self._genes, len(self._genes))
         return self
+
+
+    @property
+    def genes(self):
+        return self._genes
+
+
+    @genes.setter
+    def genes(self, val):
+        self._genes = val
+        self._fitness = None
 
 
     @property
@@ -69,7 +81,9 @@ class Route:
     @property
     def fitness(self):
         '''ranks the fitness of this route on scale of 0 to 1'''
-        return 1 / self.distance
+        if self._fitness is None:
+            self._fitness = 1 / self.distance
+        return self._fitness
 
 
     @property
@@ -242,17 +256,21 @@ class Mutator:
             A = random.randint(0, len(child.genes)-1)
             B = random.randint(0, len(child.genes)-1)
             child.genes[A], child.genes[B] = child.genes[B], child.genes[A]
+            child._fitness = None
+
 
 class Selector:   
-    def __init__(self, population, elitesize):
+    def __init__(self, population, elitesize:int, tsize:int=2):
         '''Selects a parent population from the population param'''
         self.population = population
         self.elitesize = elitesize
+        self.tsize = tsize
 
 
     def run(self):
         '''Runs the selector'''
-        parent_individuals = self.stochastic_acceptance_selection()
+        #parent_individuals = self.stochastic_acceptance_selection()
+        parent_individuals = self.tournament_selection()
 
         # elitism
         self.population.rank()
@@ -263,6 +281,15 @@ class Selector:
                 
     def tournament_selection(self):
         '''Runs the selection process for this population'''
+        parents = []
+        for i in range(len(self.population.individuals) - self.elitesize):
+            winner = self.population.random_individual()
+            for i in range(1, self.tsize):
+                competitor = self.population.random_individual()
+                if competitor.fitness > winner.fitness:
+                    winner = competitor
+            parents.append(winner)
+        return parents
 
 
     def stochastic_acceptance_selection(self):
@@ -285,11 +312,12 @@ class Selector:
 
 
 class GeneticAlgorithm:
-    def __init__(self, cities, populationsize, elitesize, mutationrate, generations):
+    def __init__(self, cities, populationsize, elitesize, tsize, mutationrate, generations):
         self.population = Population().randomize(cities, populationsize)
         self.mutationrate = mutationrate
         self.generations = generations
         self.elitesize = elitesize
+        self.tsize = tsize
         self.best_routes = []
 
 
@@ -300,14 +328,14 @@ class GeneticAlgorithm:
         self.best_routes.append(self.population.best_individual)
 
         for g in range(self.generations):
-            print(f'Generation {g}/{self.generations}: {1/self.population.max_fitness}')
+            print(f'Generation {g}/{self.generations}: {1/self.population.best_individual.fitness}')
             self.population = self.next_gen()
             self.best_routes.append(self.population.best_individual)
 
 
     def next_gen(self):
         '''using the current population, create the next generation'''
-        parents = Selector(self.population, self.elitesize).run()
+        parents = Selector(self.population, self.elitesize, self.tsize).run()
         children = Crosser(parents, self.elitesize).run() # TODO: ADD ELITESIZE TO THE CROSSER TOO
         children = Mutator(children, self.mutationrate).run()
         return children
@@ -318,7 +346,7 @@ class GeneticAlgorithm:
         plotroutes(self.best_routes)
 
 
-    def save(self, fp='gadata.json'):
+    def save(self, fp='data.json'):
         '''Export self as json file'''
         with open(fp, 'w') as f:
             json.dump(self, f, default=to_serializable)
@@ -363,15 +391,16 @@ def run_new_ga():
     ga = GeneticAlgorithm(cities=cities, 
                      populationsize=100, 
                      elitesize=20, 
+                     tsize=4, 
                      mutationrate=0.01, 
                      generations=300)
     ga.run()
-    ga.save('savedata\\run1_20c300g.json')
+    ga.save('savedata\\run5_tournamentselection.json')
     ga.plot()
 
 
 if __name__ == '__main__':
 
-    read_ga_file('assets\\example20c300g.json')
-    #run_new_ga()
+    #read_ga_file('savedata\\run1_tournamentselection.json')
+    run_new_ga()
     

@@ -86,7 +86,7 @@ def plotroutes(routes):
     
     axcolor = 'lightgoldenrodyellow'
     axgen = plt.axes([0.15,0.05,0.75,0.03], facecolor=axcolor)
-    sgen = Slider(axgen, 'Generation', valmin=0, valmax=len(gens), valinit=0) #valstep =1)
+    sgen = Slider(axgen, 'Generation', valmin=0, valmax=len(gens)-1, valinit=0) #valstep =1)
     sgen.on_changed(update)
 
     plt.show()
