@@ -374,6 +374,6 @@ def run_new_ga():
 
 if __name__ == '__main__':
 
-    #read_ga_file('run1_20c300g.json')
-    run_new_ga()
+    read_ga_file('assets\\example20c300g.json')
+    #run_new_ga()
     
