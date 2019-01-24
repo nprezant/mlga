@@ -1,9 +1,15 @@
 
+import json
 import random
 import operator
+from functools import singledispatch
 
-import matplotlib.pyplot as plt
-import matplotlib.animation as animation
+from plotter import plotroutes
+
+@singledispatch
+def to_serializable(o):
+    '''used by default'''
+    return o.serialize()
 
 
 class City:
@@ -23,13 +29,22 @@ class City:
         self.x = random.randint(xmin, xmax)
         self.y = random.randint(ymin, ymax)
         return self
+
+
+    def serialize(self):
+        '''Export self as json file'''
+        return {'x': self.x, 'y': self.y}
     
 
-    def __repr__(self):
+    def __str__(self):
         return f'City ({self.x}, {self.y})'
 
 
-class RouteWrapper:
+    def __repr__(self):
+        return f'City({self.x},{self.y})'
+
+
+class Route:
     def __init__(self, ordered_cities):
         '''The route the salesman travels through the cities'''
         self.cities = ordered_cities
@@ -69,19 +84,28 @@ class RouteWrapper:
         return [city.y for city in self.cities] + [self.cities[0].y]
 
 
+    def serialize(self):
+        '''Export self as json file'''
+        return self.__dict__
+
+
     def __len__(self):
         return len(self.cities)
 
 
-    def __repr__(self):
+    def __str__(self):
         return f'(d={self.distance}) (f={self.fitness})'
 
 
-class PopulationWrapper:
+    def __repr__(self):
+        return [c for c in self.cities]
+
+
+class Population:
     def __init__(self, routes=[]):
         '''The population of possible routes the salesman can take
         param cities list: list of cities for the route'''
-        self.cities = cities
+        #self.cities = cities
         self.routes = routes
 
 
@@ -90,7 +114,7 @@ class PopulationWrapper:
         param size int: size of population'''
         self.routes = []
         for i in range(size):
-            newroute = RouteWrapper(cities).randomize()
+            newroute = Route(cities).randomize()
             self.routes.append(newroute)
         return self
 
@@ -98,11 +122,6 @@ class PopulationWrapper:
     def random_individual(self):
         '''Returns a random individual from the population'''
         return random.choice(self.routes)
-
-
-    def random_gene(self):
-        '''Returns a random gene (city) from the city options'''
-        return random.choice(self.cities)
 
 
     def rank(self):
@@ -114,6 +133,12 @@ class PopulationWrapper:
     def ranked(self):
         '''Returns the ranked routes, but doesn't change the internal state'''
         return sorted(self.routes, key=operator.attrgetter('fitness'), reverse=True)
+
+
+    @property
+    def cities(self):
+        '''Returns a copied list of the cities in the first route'''
+        return self.routes[0].cities.copy()
 
 
     @property
@@ -134,6 +159,11 @@ class PopulationWrapper:
         return min(self.routes, key=operator.attrgetter('fitness')).fitness
 
 
+    def serialize(self):
+        '''Export self as json file'''
+        return self.__dict__ #{'routes': len(self.routes), 'cities': len(self.routes[0])}
+
+
     def __repr__(self):
         return f'Pop; routes: {len(self.routes)}; cities: {len(self.routes[0])}'
 
@@ -148,7 +178,7 @@ class Crosser:
 
     def run(self):
         '''Runs the crossover method on all the parents'''
-        children:RouteWrapper = []
+        children:Route = []
         for i in range(len(self.parents.routes) - self.elitesize):
             children.append(
                 self.cross(self.parents.routes[i], self.parents.routes[-i-1])
@@ -156,7 +186,7 @@ class Crosser:
 
         children.extend(self.parents.ranked[:self.elitesize])
 
-        return PopulationWrapper(children)
+        return Population(children)
 
 
     def cross(self, p1, p2):
@@ -180,7 +210,7 @@ class Crosser:
             r = random.randint(0, len(needed_cities)-1)
             child.append(needed_cities.pop(r))
 
-        return RouteWrapper(child)
+        return Route(child)
 
 
 class Mutator:
@@ -196,7 +226,7 @@ class Mutator:
         '''Runs the mutator'''
         for child in self.children.routes:
             self.mutate2(child)
-        return PopulationWrapper(self.children.routes)
+        return Population(self.children.routes)
 
 
     def mutate(self, child):
@@ -230,7 +260,7 @@ class Selector:
         self.population.rank()
         parent_routes.extend(self.population.routes[:self.elitesize])
 
-        return PopulationWrapper(parent_routes)
+        return Population(parent_routes)
 
                 
     def tournament_selection(self):
@@ -258,24 +288,23 @@ class Selector:
 
 class GeneticAlgorithm:
     def __init__(self, cities, populationsize, elitesize, mutationrate, generations):
-        self.population = PopulationWrapper().randomize(cities, populationsize)
+        self.population = Population().randomize(cities, populationsize)
         self.mutationrate = mutationrate
         self.generations = generations
         self.elitesize = elitesize
+        self.best_routes = []
 
 
     def run(self):
         '''runs the genetic algorithm for the specified duration
         or perhaps until some criteria is met'''
-        best_routes = []
-        best_routes.append(self.population.best_individual)
+        self.best_routes = []
+        self.best_routes.append(self.population.best_individual)
 
         for g in range(self.generations):
-            print(f'Distance {g}: {1/self.population.max_fitness}')
+            print(f'Generation {g}/{self.generations}: {1/self.population.max_fitness}')
             self.population = self.next_gen()
-            best_routes.append(self.population.best_individual)
-
-        plotroutes(best_routes)
+            self.best_routes.append(self.population.best_individual)
 
 
     def next_gen(self):
@@ -286,58 +315,65 @@ class GeneticAlgorithm:
         return children
 
 
+    def plot(self):
+        '''plots the best route data'''
+        plotroutes(self.best_routes)
+
+
+    def save(self, fp='gadata.json'):
+        '''Export self as json file'''
+        with open(fp, 'w') as f:
+            json.dump(self, f, default=to_serializable)
+
+
     def serialize(self):
-        '''Turn self into json notation'''
+        return self.__dict__
 
 
+def decode_ga(dct):
+    '''decodes a GeneticAlgorithm object'''
+    elitesize = dct['elitesize']
+    generations = dct['generations']
+    mutationrate = dct['mutationrate']
 
-def plotroutes(routes):
-    '''plots a list of routes as an animation'''
-    fig, (ax1, ax2) = plt.subplots(2, 1)
+    best_routes = []
+    for route in dct['best_routes']:
+        r = Route([])
+        best_routes.append(r)
+        for city in route['cities']:
+            r.cities.append(City(city['x'], city['y']))
 
-    title = ax1.text(0.5,0.5, "", bbox={'facecolor':'w', 'alpha':0.5, 'pad':5},
-            transform=ax1.transAxes, ha="center")
-
-    cityMarks, = ax1.plot(routes[0].x, routes[0].y, 'b*')
-    routeLine, = ax1.plot(routes[0].x, routes[0].y, 'r--')
-
-    gen = [i for i in range(len(routes))]
-    dist = [r.distance for r in routes]
-    frontier, = ax2.plot(gen, dist, '-')
-    frontierTrace, = ax2.plot(gen[0], dist[0], '*')
-
-    def animate(frame, routeLine, routes, frontierTrace):
-        '''updates the plot'''
-
-        title.set_text(f'Generation: {frame}\n'
-                       'Route distance: {:8.2f}\n'.format(routes[frame].distance) +
-                       'Initial Distance: {:8.2f}'.format(routes[0].distance))
-
-        routeLine.set_xdata(routes[frame].x)
-        routeLine.set_ydata(routes[frame].y)
-
-        frontierTrace.set_xdata(frame)
-        frontierTrace.set_ydata(routes[frame].distance)
-
-        return routeLine, title, frontierTrace
-
-    ani = animation.FuncAnimation(
-        fig=fig, func=animate, frames=len(routes), fargs=(routeLine, routes, frontierTrace), interval=200, blit=True)
-
-    plt.show()
+    #ga = GeneticAlgorithm(cities, populationsize, elitesize, mutationrate, generations)
+    return best_routes
 
 
+def read_ga_file(fp):
+    '''reads in a genetic algorithm saved file and plots the data'''
+    with open(fp, 'r') as f:
+        data = f.read()
+
+    dct = json.loads(data)
+    ga = decode_ga(dct)
+    plotroutes(ga)
+
+
+def run_new_ga():
+    '''runs a new genetic algorithm'''
+    cities = [City().randomize(0,200,0,200) for i in range(20)]
+    populationsize = 10
+
+    ga = GeneticAlgorithm(cities=cities, 
+                     populationsize=100, 
+                     elitesize=20, 
+                     mutationrate=0.01, 
+                     generations=300)
+    ga.run()
+    ga.save('run1_20c300g.json')
+    ga.plot()
 
 
 if __name__ == '__main__':
 
-    #random.seed(90001)
-
-    cities = [City().randomize(0,200,0,200) for i in range(20)]
-    populationsize = 10
-
-    GeneticAlgorithm(cities=cities, 
-                     populationsize=100, 
-                     elitesize=10, 
-                     mutationrate=0.01, 
-                     generations=300).run()
+    #read_ga_file('run1_20c300g.json')
+    run_new_ga()
+    
