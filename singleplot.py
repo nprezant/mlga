@@ -3,10 +3,6 @@ import sys
 from operator import itemgetter
 
 import matplotlib.pyplot as plt
-#import matplotlib.animation as animation
-
-#from matplotlib.widgets import Slider, TextBox
-#from matplotlib.text import Text
 
 import savejson
 
@@ -23,23 +19,36 @@ def plotmultipleroutesets(runs):
     plt.show()
 
 
-def plotroutes(routes):
+def plotroutes(pop_history):
     fig = plt.figure()
-    plotsinglerouteset(fig, routes)
+    plotsinglerouteset(fig, pop_history)
     plt.show()
 
 
-
-def plotsinglerouteset(fig, routes):
+def plotsinglerouteset(fig, pop_history):
     '''plots a list of routes as an with user controls'''
     
     ax1 = fig.add_axes([0.55, 0.53, 0.35, 0.35]) # route plot
     ax2 = fig.add_axes([0.15, 0.10, 0.75, 0.35]) # generation plot
     ax3 = fig.add_axes([0.15, 0.53, 0.35, 0.35]) # text box
 
-    # frontier plot data
-    gens = [i for i in range(len(routes))]
-    dist = [r.distance for r in routes]
+    # plot data
+    gens = []
+    dist = []
+    evals = []
+    perc90 = []
+    perc10 = []
+
+    for i,pop in enumerate(pop_history):
+        gens.append(i)
+        dist.append(1/pop.mean_fitness)
+        if i==0: 
+            evals.append(pop.f_evals)
+        else: 
+            evals.append(evals[i-1] + pop.f_evals)
+
+        perc90.append(pop.get_percentile(0.90)-dist[i])
+        perc10.append(-pop.get_percentile(0.10)+dist[i])
 
     # index of route with minimum distance
     imin = min(enumerate(dist), key=itemgetter(1))[0]
@@ -52,36 +61,38 @@ def plotsinglerouteset(fig, routes):
                     transform=ax3.transAxes, ha='left', va='top')
 
     # city data plot
-    cityMarks, = ax1.plot(routes[imin].x, routes[imin].y, 'b*', markersize=12)
-    routeLine, = ax1.plot(routes[imin].x, routes[imin].y, 'r--')
+    route = pop_history[imin].best_individual
+    cityMarks, = ax1.plot(route.x, route.y, 'b*', markersize=12)
+    routeLine, = ax1.plot(route.x, route.y, 'r--')
     ax1.axis('equal')
 
-    # frontier lines
-    frontier, = ax2.plot(gens, dist, '-')
-    frontierTrace, = ax2.plot(gens[imin], dist[imin], '*', markersize=16)
-    ax2.set_xlabel('Generation')
+    # route distance lines
+    dist_err = ax2.errorbar(evals, dist, yerr=[perc10, perc90], fmt='o', linestyle='dotted')
+    #dist_line, = ax2.plot(evals, dist, '-')
+    dist_mark, = ax2.plot(evals[imin], dist[imin], '*', markersize=16)
+    ax2.set_xlabel('Function Evaluations')
     ax2.set_ylabel('Total Distance')
-    ax2.set_xlim(0, len(gens))
+    ax2.set_xlim(0, max(evals))
     
 
-    def update(gen):
+    def update(eval):
         '''updates the plot
         *gen* is the generation to set the stuff to'''
 
         # slider value comes off as float
-        gen = int(gen)
-        title.set_text(base_text + ''
-                       f'Generation: {gen}\n'
-                       'Route distance: {:8.2f}\n'.format(routes[gen].distance) +
-                       'Initial Distance: {:8.2f}'.format(routes[0].distance))
+        gen = int(eval/100)
+        title.set_text(base_text + f'Function Evaluation: {eval}\n'
+                                   f'Generation: {gen}')
+
+        route = pop_history[gen].best_individual
 
         # plot of route through cities
-        routeLine.set_xdata(routes[gen].x)
-        routeLine.set_ydata(routes[gen].y)
+        routeLine.set_xdata(route.x)
+        routeLine.set_ydata(route.y)
 
         # plot of distance over generation
-        frontierTrace.set_xdata(gen)
-        frontierTrace.set_ydata(routes[gen].distance)
+        dist_mark.set_xdata(eval)
+        dist_mark.set_ydata(route.distance)
 
         # update canvas
         fig.canvas.draw_idle()

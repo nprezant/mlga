@@ -1,8 +1,7 @@
 
 import random
 import operator
-
-OBJECTIVE_CALLS = 0
+from math import ceil
 
 class City:
     def __init__(self, x=0, y=0):
@@ -70,12 +69,19 @@ class Route:
         return d
 
 
+    def calc_fitness(self):
+        '''Calculates fitness of this route on scale of 0 to 1
+        Need a function to do so to keep track of the
+        number of times this function is called'''
+        self._fitness = 1 / self.distance
+
+
     @property
     def fitness(self):
-        '''ranks the fitness of this route on scale of 0 to 1'''
-        if self._fitness is None:
-            self._fitness = 1 / self.distance
-            OBJECTIVE_CALLS += 1
+        '''retreives the fitness of this route.
+        You must call the "calc_fitness" method before
+        accessing this property'''
+        assert self._fitness is not None
         return self._fitness
 
 
@@ -111,25 +117,12 @@ class Route:
 
 
 class Population:
-    def __init__(self, routes:list, size=None):
+    def __init__(self, routes:list):
         '''The population of possible routes the salesman can take
         param cities list: list of cities for the route'''
         self.individuals = routes
-        if size is None:
-            self.size = len(self.individuals)
-        else:
-            self.size = size
-
-
-    def randomize(self, cities, size):
-        '''Randomizes (resets) the population of routes
-        param size int: size of population'''
-        self.individuals = []
-        self.size = size
-        for i in range(size):
-            newroute = Route(cities).randomize()
-            self.individuals.append(newroute)
-        return self
+        self.original_size = len(self.individuals)
+        self.f_evals = 0
 
 
     def add(self, pop):
@@ -140,6 +133,20 @@ class Population:
     def random_individual(self):
         '''Returns a random individual from the population'''
         return random.choice(self.individuals)
+
+
+    def evaluate(self) -> int:
+        '''Runs the objective function on the individuals in place
+        Returns the number of times the objective function was run'''
+        count = 0
+        for i in self.individuals:
+            if i._fitness is None:
+                i.calc_fitness()
+                count += 1
+            else:
+                pass
+        self.f_evals += count
+        return count
 
 
     def rank(self):
@@ -184,6 +191,12 @@ class Population:
         return sum(fitnesses) / len(fitnesses)
 
 
+    def get_percentile(self, k):
+        '''returns the distance of the kth percentile individual'''
+        index = ceil(k * len(self.individuals))
+        return [r.distance for i,r in enumerate(self.individuals) if i == index][0]
+
+
     def serialize(self):
         '''Export self as json file'''
         return self.__dict__ #{'routes': len(self.routes), 'cities': len(self.routes[0])}
@@ -191,3 +204,14 @@ class Population:
 
     def __repr__(self):
         return f'Pop; routes: {len(self.individuals)}; cities: {len(self.individuals[0])}'
+
+
+def random_population(cities, size):
+    '''Creates a random population of routes
+    cities: cities for the routes
+    size: number of routes in the population'''
+    individuals = []
+    for i in range(size):
+        newroute = Route(cities).randomize()
+        individuals.append(newroute)
+    return Population(individuals)

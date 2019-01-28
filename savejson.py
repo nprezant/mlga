@@ -5,7 +5,7 @@ import json
 from pathlib import Path
 from functools import singledispatch
 
-from baseindividuals import City, Route
+from bases import City, Route
 
 @singledispatch
 def to_serializable(o):
@@ -20,10 +20,10 @@ def to_serializable(o):
 
 def decode_ga(dct):
     '''decodes a GeneticAlgorithm object'''
-    elitesize = dct['elitesize']
+    elitesize = dct['elite_size']
     generations = dct['generations']
-    mutationrate = dct['mutationrate']
-    tournamentsize = dct['tournamentsize']
+    mutationrate = dct['mutation_rate']
+    tournamentsize = dct['tourny_size']
     classifier = dct['classifier']
 
     best_routes = []
@@ -81,3 +81,14 @@ def load_from_files(directory, name_pattern) -> list:
         runs.append(load(fp))
 
     return runs
+
+
+class GASaveObject:
+    def __init__(self):
+        '''An object to hold the save data'''
+        self.best_routes:Route = []
+        self.elite_size:int = None
+        self.generations:int = None
+        self.mutation_rate:int = None
+        self.tourny_size:int = None
+        self.classifier:int = None

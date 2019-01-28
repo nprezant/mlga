@@ -1,18 +1,10 @@
 
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.linear_model import LogisticRegression
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
+#from sklearn.neighbors import KNeighborsClassifier
+#from sklearn.linear_model import LogisticRegression
+#from sklearn.tree import DecisionTreeClassifier
+#from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from sklearn.naive_bayes import GaussianNB
-from sklearn.svm import SVC
-
-models = dict()
-models['LR'] = LogisticRegression()
-models['LDA'] = LinearDiscriminantAnalysis()
-models['KNN'] = KNeighborsClassifier()
-models['CART'] = DecisionTreeClassifier()
-models['NB'] = GaussianNB()
-models['SVM'] = SVC()
+#from sklearn.svm import SVC
 
 
 class TrainingData:
@@ -53,19 +45,12 @@ class TrainingData:
 
 
 class Classifier:
-    def __init__(self, modelname=None):
+    def __init__(self):
         '''Classifies data with supervised machine learning
         Determines whether or not child routes will be 
-        "good" members of the population
-        
-        model: must be a callable classifier model. 
-        If None, defaults to KNN'''
-        if modelname is None:
-            self.modelname = 'KNN'
-            self.model = KNeighborsClassifier()
-        else:
-            self.modelname = modelname
-            self.model = models[modelname]
+        "good" members of the population'''
+        self.modelname = 'GaussianNB'
+        self.model = GaussianNB()
         self.training_data = TrainingData()
 
 
@@ -80,12 +65,3 @@ class Classifier:
 
     def serialize(self):
         return self.modelname
-
-
-def spot_check():
-    '''Spot checks classification methods'''
-
-    # given a population
-    pop = None
-
-    # 
