@@ -19,15 +19,22 @@ def run_new_ga():
     init_pop = random_population(cities,100)
 
     ga = GeneticAlgorithm(initial_population=init_pop,
-                     tourny_size=2, 
-                     mutation_rate=0.01,
-                     f_eval_max=8000)
+                          tourny_size=2, 
+                          mutation_rate=0.01,
+                          f_eval_max=3000)
+
     ga.run_without_ml()
-    #savejson.dump(ga, 'savedata\\mltest.txt')
-    for i in ga.pop_history:
+    hist1 = ga.pop_history.copy()
+    for i in hist1:
         i.evaluate()
-    best_routes = [i.best_individual for i in ga.pop_history]
-    plotroutes(ga.pop_history)
+
+    ga.run_with_ml()
+    hist2 = ga.pop_history.copy()
+    for i in hist2:
+        i.evaluate()
+
+    plotroutes([(hist1, 'GA'), (hist2, 'GA with ML')])
+    #savejson.dump(ga, 'savedata\\mltest.txt')
 
 
 def make_cities(numcities:int):

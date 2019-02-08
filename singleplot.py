@@ -19,14 +19,53 @@ def plotmultipleroutesets(runs):
     plt.show()
 
 
-def plotroutes(pop_history):
-    fig = plt.figure()
-    plotsinglerouteset(fig, pop_history)
+def plotroutes(pop_histories:list):
+    plt.style.use('seaborn-whitegrid')
+
+    # plot all on one axis
+    fig, ax = plt.subplots()
+    ax.set_title('Travelling Salesman Problem')
+    plotall(ax, pop_histories)
+
+    # plot each individual figure
+    for pop_history in pop_histories:
+        fig = plt.figure()
+        plotsinglerouteset(fig, *pop_history)
     plt.show()
 
 
-def plotsinglerouteset(fig, pop_history):
-    '''plots a list of routes as an with user controls'''
+def plotall(ax, pop_histories):
+    '''plots all histories on the same axes'''
+    
+    for hist,title in pop_histories:
+        gens = []
+        dist = []
+        evals = []
+        perc90 = []
+        perc10 = []
+
+        for i,pop in enumerate(hist):
+            gens.append(i)
+            dist.append(1/pop.mean_fitness)
+            if i==0: 
+                evals.append(0)
+            else: 
+                evals.append(evals[i-1] + pop.f_evals)
+
+            perc90.append(pop.get_percentile(0.90)-dist[i])
+            perc10.append(-pop.get_percentile(0.10)+dist[i])
+
+        dist_err = ax.errorbar(evals[5::5], dist[5::5], yerr=[perc10[5::5], perc90[5::5]], fmt='.', capsize=2)
+        dist_line, = ax.plot(evals, dist, ':', label=title)
+        ax.set_xlabel('Function Evaluations')
+        ax.set_ylabel('Total Distance')
+        ax.set_xlim(0, max(evals))
+    ax.figure.legend()
+
+
+
+def plotsinglerouteset(fig, pop_history, title):
+    '''plots the stuff'''
     
     ax1 = fig.add_axes([0.55, 0.53, 0.35, 0.35]) # route plot
     ax2 = fig.add_axes([0.15, 0.10, 0.75, 0.35]) # generation plot
@@ -43,7 +82,7 @@ def plotsinglerouteset(fig, pop_history):
         gens.append(i)
         dist.append(1/pop.mean_fitness)
         if i==0: 
-            evals.append(pop.f_evals)
+            evals.append(0)
         else: 
             evals.append(evals[i-1] + pop.f_evals)
 
@@ -67,9 +106,9 @@ def plotsinglerouteset(fig, pop_history):
     ax1.axis('equal')
 
     # route distance lines
-    dist_err = ax2.errorbar(evals, dist, yerr=[perc10, perc90], fmt='o', linestyle='dotted')
-    #dist_line, = ax2.plot(evals, dist, '-')
-    dist_mark, = ax2.plot(evals[imin], dist[imin], '*', markersize=16)
+    dist_err = ax2.errorbar(evals[5::5], dist[5::5], yerr=[perc10[5::5], perc90[5::5]], fmt='.', capsize=2)
+    dist_line, = ax2.plot(evals, dist, ':')
+    dist_mark, = ax2.plot(evals[imin], dist[imin], '*', markersize=16, zorder=20)
     ax2.set_xlabel('Function Evaluations')
     ax2.set_ylabel('Total Distance')
     ax2.set_xlim(0, max(evals))
@@ -80,18 +119,20 @@ def plotsinglerouteset(fig, pop_history):
         *gen* is the generation to set the stuff to'''
 
         # slider value comes off as float
-        gen = int(eval/100)
+        eval = int(eval)
+        gen = feval2gen(eval, evals, gens)
         title.set_text(base_text + f'Function Evaluation: {eval}\n'
                                    f'Generation: {gen}')
 
-        route = pop_history[gen].best_individual
+        route = pop_history[gen].mean_individual
+        if route is None: return
 
         # plot of route through cities
         routeLine.set_xdata(route.x)
         routeLine.set_ydata(route.y)
 
         # plot of distance over generation
-        dist_mark.set_xdata(eval)
+        dist_mark.set_xdata(evals[gen])
         dist_mark.set_ydata(route.distance)
 
         # update canvas
@@ -144,6 +185,15 @@ def axes2figbox_lbwh(ax, fig):
     height = top-bottom
 
     return [left, bottom, width, height]
+
+
+def feval2gen(f_eval:int, evals:list, gens:list):
+    '''Converts number of function evaluations to the generation
+    If the number can't be found, it returns the first generation'''
+    for i,num_evals in enumerate(evals):
+        if num_evals >= f_eval:
+            return gens[i]
+    return gens[0]
 
 
 if __name__ == '__main__':

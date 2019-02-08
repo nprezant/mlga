@@ -87,7 +87,6 @@ class GASaveObject:
     def __init__(self):
         '''An object to hold the save data'''
         self.best_routes:Route = []
-        self.elite_size:int = None
         self.generations:int = None
         self.mutation_rate:int = None
         self.tourny_size:int = None

@@ -173,6 +173,15 @@ class Population:
 
 
     @property
+    def mean_individual(self):
+        '''Returns the individual route with the mean fitness in this population'''
+        ranked = self.ranked
+        num = len(ranked)
+        mean_idx = int(num/2)
+        return ranked[mean_idx]
+
+
+    @property
     def max_fitness(self):
         '''Finds the maximum fitness route of the population'''
         return max(self.individuals, key=operator.attrgetter('fitness')).fitness

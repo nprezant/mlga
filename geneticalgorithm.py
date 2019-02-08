@@ -1,8 +1,9 @@
 
 import random
 
+from sklearn.naive_bayes import GaussianNB
+
 from bases import City, Route, Population
-from ML import Classifier
 
 
 def crossover(parents):
@@ -121,19 +122,21 @@ def cull(keep:int, *args:Population):
 class GeneticAlgorithm:
     def __init__(self, initial_population, tourny_size, mutation_rate, f_eval_max):
         self.initial_population = initial_population
-        self.pop_history = []
         self.mutation_rate = mutation_rate
         self.tourny_size = tourny_size
         self.f_eval_max = f_eval_max
+        self.reset()
 
+
+    def reset(self):
+        '''resets the variables necessary to re-run the genetic algorithm'''
         self.f_evals = 0
-        self.generations = 0
-        self.best_routes = []
+        self.pop_history = []
 
 
     def run_without_ml(self):
         '''runs the genetic algorithm without machine learning'''
-        self.best_routes = []
+        self.reset()
         pop_size = len(self.initial_population.individuals)
 
         new_population = self.initial_population
@@ -157,47 +160,70 @@ class GeneticAlgorithm:
 
     def run_with_ml(self):
         '''runs the genetic algorithm with machine learning'''
-        self.best_routes = []
-        self.best_routes.append(self.population.best_individual)
+        self.reset()
+        self.classifier = GaussianNB()
 
-        for g in range(self.generations):
-            print(f'Generation {g}/{self.generations}: {1/self.population.best_individual.fitness}')
-            if not self.classifier is None: self.update_classifier(self.population)
-            self.population = self.next_gen()
-            self.best_routes.append(self.population.best_individual)
-            if not self.classifier is None:
-                good_pop, bad_pop = self.classify_and_filter(self.population)
-                self.population = good_pop
+        pop_size = len(self.initial_population.individuals)
+
+        new_population = self.initial_population
+        self.pop_history.append(new_population)
+
+        while self.f_evals < self.f_eval_max:
+            # run objective function and keep count
+            objective_calls = new_population.evaluate()
+            self.f_evals += objective_calls
+
+            # only keep the best of the old and new population
+            population = cull(pop_size, self.pop_history[-1], new_population)
+
+            # add population to the history, and update the function evals it took
+            population.f_evals = objective_calls
+            self.pop_history.append(population)
+
+            # train classifier with the population history
+            self.train_classifier(self.pop_history)
+
+            # evolve population
+            new_population = evolve(population, self.tourny_size, self.mutation_rate)
+
+            # classify
+            good_pop, bad_pop = self.classify(new_population)
+            new_population = good_pop
+            print(f'Classifier chose {len(good_pop.individuals)} children as good')
 
 
-    def update_classifier(self, pop:Population):
-        '''Updates the classifier with the population given'''
+    def train_classifier(self, poph):
+        '''Updates the classifier a list of all the prior populations given'''
 
-        # add the new population to the population history
-        #self.poph.add(pop)
+        # make one giant population out of the population history list
+        combined_pop = Population([])
+        for p in poph:
+            combined_pop.add(p)
 
-        x_train = [c.x + c.y for c in pop.individuals]
+        # make X training data in the form of [[x1,x2...y1,y2...], ...]
+        x_train = [r.x + r.y for r in combined_pop.individuals]
 
-        mean_fitness = pop.mean_fitness
-        y_train = ['good' if i.fitness > mean_fitness else 'bad' for i in pop.individuals]
+        # determine cutoff value for a "good" individual
+        min_fitness = combined_pop.min_fitness
+        max_fitness = combined_pop.max_fitness
+        delta = max_fitness - min_fitness
+        cutoff = max_fitness - (delta * 0.5) # only keep the top 20%
 
-        self.classifier.training_data.replace_x(x_train)
-        self.classifier.training_data.replace_y(y_train)
+        # make Y training data in the form of ['good', 'bad', 'bad', ...]
+        y_train = ['good' if i.fitness > cutoff else 'bad' for i in combined_pop.individuals]
 
-        self.classifier.re_train()
+        self.classifier.fit(x_train, y_train)
 
 
-    def classify_and_filter(self, pop):
+    def classify(self, pop):
         '''Predicts whether individivuals in the population will
         be good or bad, then returns them'''
-        old_pop_size = len(pop.individuals)
-        #x_data = [c.x + c.y for c in pop.individuals]
-        #predictions = self.classifier.predict(x_data)
-        #good_indivs = [pop.individuals[i] for i,p in enumerate(predictions) if p == 'good']
-        #bad_indivs  = [pop.individuals[i] for i,p in enumerate(predictions) if p == 'bad']
-        #good_pop = Population(good_indivs, old_pop_size)
-        #bad_pop = Population(bad_indivs, old_pop_size)
-        #if len(good_pop.individuals) < 5:
+        x_data = [c.x + c.y for c in pop.individuals]
+        predictions = self.classifier.predict(x_data)
+        good_indivs = [pop.individuals[i] for i,p in enumerate(predictions) if p == 'good']
+        bad_indivs  = [pop.individuals[i] for i,p in enumerate(predictions) if p == 'bad']
+        good_pop = Population(good_indivs)
+        bad_pop = Population(bad_indivs)
         return good_pop, bad_pop
 
 
