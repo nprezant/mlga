@@ -1,0 +1,7 @@
+__pycache__
+.vs
+.vscode
+
+*.pyproj
+*.sln
+*.pptx

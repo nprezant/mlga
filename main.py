@@ -1,15 +1,14 @@
 
 from geneticalgorithm import GeneticAlgorithm
-from ML import Classifier
 from bases import City, Route, random_population
-from singleplot import plotroutes
+from singleplot import plot_histories, plot_population
 import savejson
 
 
 def plot_from_file(fp):
     '''reads in a genetic algorithm saved file and plots the data'''
-    dct = savejson.load(fp)
-    plotroutes(dct['best_routes'])
+    #dct = savejson.load(fp)
+    #plotroutes(dct['best_routes'])
 
 
 def run_new_ga():
@@ -21,7 +20,7 @@ def run_new_ga():
     ga = GeneticAlgorithm(initial_population=init_pop,
                           tourny_size=2, 
                           mutation_rate=0.01,
-                          f_eval_max=3000)
+                          f_eval_max=1000)
 
     ga.run_without_ml()
     hist1 = ga.pop_history.copy()
@@ -33,7 +32,8 @@ def run_new_ga():
     for i in hist2:
         i.evaluate()
 
-    plotroutes([(hist1, 'GA'), (hist2, 'GA with ML')])
+    plot_histories([(hist1, 'GA'), (hist2, 'GA with ML')])
+    #plot_population(hist1[-1])
     #savejson.dump(ga, 'savedata\\mltest.txt')
 
 
@@ -41,7 +41,7 @@ def make_cities(numcities:int):
     cities = [City().randomize(0,200,0,200) for i in range(numcities)]
     route = Route(cities)
     savejson.dump(route, f'cities\\newcity{numcities}.txt')
-    plotroutes([route])
+    #plotroutes([route])
 
 
 if __name__ == '__main__':
