@@ -8,8 +8,6 @@ from bases import City, Route, Population
 
 def crossover(parents):
     '''Crosses the parents over to create children'''
-    all_cities = parents.genes
-
     children:Route = []
     for i, individual in enumerate(parents.individuals):
         children.append(cross(individual, parents.individuals[-i-1]))
@@ -19,7 +17,7 @@ def crossover(parents):
 def cross(p1, p2):
     '''Crosses parent1 with parent2
     Note that all cities must be represented'''
-        
+    
     child = []
 
     r1 = random.randint(0, len(p1.genes))
@@ -33,7 +31,7 @@ def cross(p1, p2):
 
     child.extend(cross_segment)
 
-    for i in range(len(needed_cities)):
+    for _ in range(len(needed_cities)):
         r = random.randint(0, len(needed_cities)-1)
         child.append(needed_cities.pop(r))
 
@@ -50,10 +48,10 @@ def mutate(children, chance):
     return Population(children.individuals)
 
 
-def mutate_1(child):
-    '''Mutates each gene in child with a chance of self.chance'''
+def mutate_1(child, chance):
+    '''Mutates each gene in child with a chance of chance'''
     for i in range(len(child.genes)):
-        if random.random() < self.chance:
+        if random.random() < chance:
             r = random.randint(0, len(child.genes)-1)
             child.genes[i], child.genes[r] = child.genes[r], child.genes[i]
             child._fitness = None
@@ -72,9 +70,9 @@ def select(population, tourny_size:int=2):
     '''Selects a parent population from the population
     Uses a tournament to select parents'''
     parents = []
-    for i in population.individuals:
+    for _ in population.individuals:
         winner = population.random_individual()
-        for i in range(1, tourny_size):
+        for _ in range(1, tourny_size):
             competitor = population.random_individual()
             if competitor.fitness > winner.fitness:
                 winner = competitor
