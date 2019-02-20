@@ -2,6 +2,7 @@
 import random
 import operator
 from math import ceil
+from statistics import pstdev
 
 class City:
     def __init__(self, x=0, y=0):
@@ -154,6 +155,15 @@ class Population:
         self.individuals.sort(key=operator.attrgetter('fitness'), reverse=True)
 
 
+    def copy(self):
+        '''Returns a copy of this population
+        Each individual will be copied'''
+        new_inds = []
+        for ind in self.individuals:
+            new_inds.append(Route(ind.genes.copy()))
+        return Population(new_inds)
+
+
     @property
     def ranked(self):
         '''Returns the ranked routes, but doesn't change the internal state'''
@@ -204,6 +214,12 @@ class Population:
         '''returns the distance of the kth percentile individual'''
         index = ceil(k * len(self.individuals))
         return [r.distance for i,r in enumerate(self.individuals) if i == index][0]
+
+
+    def get_standard_deviation(self):
+        '''Returns the standard deviation of the population's fitness'''
+        fitnesses = [i.fitness for i in self.individuals]
+        return pstdev(fitnesses)
 
 
     def serialize(self):

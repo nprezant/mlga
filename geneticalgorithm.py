@@ -137,7 +137,7 @@ class GeneticAlgorithm:
         self.reset()
         pop_size = len(self.initial_population.individuals)
 
-        new_population = self.initial_population
+        new_population = self.initial_population.copy()
         self.pop_history.append(new_population)
 
         while self.f_evals < self.f_eval_max:
@@ -163,8 +163,11 @@ class GeneticAlgorithm:
 
         pop_size = len(self.initial_population.individuals)
 
-        new_population = self.initial_population
+        new_population = self.initial_population.copy()
         self.pop_history.append(new_population)
+
+        low_dev_count = 0 # count of number of times the population had low deviation in a row
+        no_improvement_count = 0 # count of generations that showed no improvement
 
         while self.f_evals < self.f_eval_max:
             # run objective function and keep count
@@ -174,6 +177,13 @@ class GeneticAlgorithm:
             # only keep the best of the old and new population
             population = cull(pop_size, self.pop_history[-1], new_population)
 
+            # figure out if generation improved
+            if (new_population.max_fitness >= self.pop_history[-1].max_fitness) and (new_population.mean_fitness >= self.pop_history[-1].mean_fitness):
+                print('no improvement in this generation')
+                no_improvement_count += 1
+            else:
+                no_improvement_count = 0
+
             # add population to the history, and update the function evals it took
             population.f_evals = objective_calls
             self.pop_history.append(population)
@@ -181,13 +191,25 @@ class GeneticAlgorithm:
             # train classifier with the population history
             self.train_classifier(self.pop_history)
 
-            # evolve population
-            new_population = evolve(population, self.tourny_size, self.mutation_rate)
+            # evolve population. if the population has a low standard deviation, try mutation
+            dev = population.get_standard_deviation()
+            # print(f'Population standard deviation: {dev}')
+            if dev < 5e-6 or no_improvement_count > 2:
+                new_population = mutate(population.copy(), 1)
+                # break the loop if the we have had 5 instances of low deviation
+                low_dev_count += 1
+                if low_dev_count > 3:
+                    print(f'broken at eval = {self.f_evals}')
+                    break
+                print('just mutated this time')
+            else:
+                low_dev_count = 0
+                new_population = evolve(population, self.tourny_size, self.mutation_rate)
 
             # classify
             good_pop, bad_pop = self.classify(new_population)
             new_population = good_pop
-            print(f'Classifier chose {len(good_pop.individuals)} children as good')
+            #print(f'Classifier chose {len(good_pop.individuals)} children as good')
 
 
     def train_classifier(self, poph):

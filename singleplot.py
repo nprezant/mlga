@@ -91,7 +91,7 @@ def plot_all(ax, pop_histories):
         _, = ax.plot(evals, dist, ':', color=color, label=title)
         ax.set_xlabel('Function Evaluations')
         ax.set_ylabel('Total Distance')
-        ax.set_xlim(0, max(evals))
+        #ax.set_xlim(0, max(evals))
     mark, = ax.plot(points[0].eval, points[0].mean_dist, '*', markersize=16, label='Selected Population')
     ax.legend()
 
