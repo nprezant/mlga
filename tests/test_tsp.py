@@ -1,23 +1,18 @@
+# -*- coding: utf-8 -*-
 
-from geneticalgorithm import GeneticAlgorithm
-from bases import City, Route, random_population
-from singleplot import plot_histories, plot_population
-import savejson
+from .tsp_bases import City, Route, random_population
 
+from .tsp_plot import plot_histories
 
-def plot_from_file(fp):
-    '''reads in a genetic algorithm saved file and plots the data'''
-    #dct = savejson.load(fp)
-    #plotroutes(dct['best_routes'])
-
+import GAlgorithm
 
 def run_new_ga():
     '''runs a new genetic algorithm'''
     #cities = [City().randomize(0,200,0,200) for i in range(20)]
-    cities = savejson.load('cities\\starter_cities10.txt')
+    cities = GAlgorithm.saver.load('cities\\starter_cities10.txt')
     init_pop = random_population(cities,100)
 
-    ga = GeneticAlgorithm(initial_population=init_pop,
+    ga = GAlgorithm.GeneticAlgorithm(initial_population=init_pop,
                           tourny_size=2, 
                           mutation_rate=0.05,
                           f_eval_max=3500)
@@ -33,13 +28,12 @@ def run_new_ga():
         i.evaluate()
 
     plot_histories([(hist1, 'GA'), (hist2, 'GA with ML')])
-    #savejson.dump(ga, 'savedata\\mltest.txt')
 
 
 def make_cities(numcities:int):
     cities = [City().randomize(0,200,0,200) for i in range(numcities)]
     route = Route(cities)
-    savejson.dump(route, f'cities\\newcity{numcities}.txt')
+    GAlgorithm.saver.dump(route, f'cities\\newcity{numcities}.txt')
 
 
 if __name__ == '__main__':
