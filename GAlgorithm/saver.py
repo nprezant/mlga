@@ -5,7 +5,7 @@ import json
 from pathlib import Path
 from functools import singledispatch
 
-from bases import City, Route
+#from tests.tsp_bases import City, Route
 
 @singledispatch
 def to_serializable(o):

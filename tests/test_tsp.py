@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from .tsp_bases import City, Route, random_population
+from .tsp_bases import City, Route, random_population, select, crossover, mutate
 
 from .tsp_plot import plot_histories
 
@@ -8,14 +8,18 @@ import GAlgorithm
 
 def run_new_ga():
     '''runs a new genetic algorithm'''
-    #cities = [City().randomize(0,200,0,200) for i in range(20)]
-    cities = GAlgorithm.saver.load('cities\\starter_cities10.txt')
+    cities = [City().randomize(0,200,0,200) for i in range(10)]
+    #cities = GAlgorithm.load('cities\\starter_cities10.txt')
     init_pop = random_population(cities,100)
 
     ga = GAlgorithm.GeneticAlgorithm(initial_population=init_pop,
                           tourny_size=2, 
                           mutation_rate=0.05,
                           f_eval_max=3500)
+
+    ga.select = select
+    ga.crossover = crossover
+    ga.mutate = mutate
 
     ga.run_without_ml()
     hist1 = ga.pop_history.copy()
@@ -33,7 +37,7 @@ def run_new_ga():
 def make_cities(numcities:int):
     cities = [City().randomize(0,200,0,200) for i in range(numcities)]
     route = Route(cities)
-    GAlgorithm.saver.dump(route, f'cities\\newcity{numcities}.txt')
+    GAlgorithm.dump(route, f'cities\\newcity{numcities}.txt')
 
 
 if __name__ == '__main__':
