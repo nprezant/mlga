@@ -18,25 +18,6 @@ def to_serializable(o):
         return o
 
 
-def decode_ga(dct):
-    '''decodes a GeneticAlgorithm object'''
-    elitesize = dct['elite_size']
-    generations = dct['generations']
-    mutationrate = dct['mutation_rate']
-    tournamentsize = dct['tourny_size']
-    classifier = dct['classifier']
-
-    best_routes = []
-    for route in dct['best_routes']:
-        r = Route([])
-        best_routes.append(r)
-        for city in route['_genes']:
-            r.genes.append(City(city['x'], city['y']))
-
-    dct['best_routes'] = best_routes
-    return dct
-
-
 def load(fp):
     '''reads in a genetic algorithm saved file and plots the data'''
     with open(fp, 'r') as f:

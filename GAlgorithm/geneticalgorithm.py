@@ -6,6 +6,10 @@ from sklearn.naive_bayes import GaussianNB
 from .bases import Population
 
 
+def default_select(population, tourny_size):
+    return None
+
+
 def cull(keep:int, *args:Population):
     '''Keeps only the best *keep* number of individuals in the populations'''
     total_pop = Population([])
@@ -16,7 +20,7 @@ def cull(keep:int, *args:Population):
 
 
 class GeneticAlgorithm:
-    def __init__(self, initial_population, tourny_size, mutation_rate, f_eval_max):
+    def __init__(self, initial_population, tourny_size=2, mutation_rate=0.05, f_eval_max=4000):
         self.initial_population = initial_population
         self.mutation_rate = mutation_rate
         self.tourny_size = tourny_size
@@ -132,7 +136,7 @@ class GeneticAlgorithm:
             combined_pop.add(p)
 
         # make X training data in the form of [[x1,x2...y1,y2...], ...]
-        x_train = [r.x + r.y for r in combined_pop.individuals]
+        x_train = [r.make_training_data() for r in combined_pop.individuals]
 
         # determine cutoff value for a "good" individual
         min_fitness = combined_pop.min_fitness

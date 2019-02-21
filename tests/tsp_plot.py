@@ -48,8 +48,8 @@ def plot_all(ax, pop_histories):
             pt.parent = pop
             pt.gen = i
             pt.mean_dist = 1/pop.mean_fitness
-            pt.perc90_dist =  pop.get_percentile(0.90) - pt.mean_dist
-            pt.perc10_dist = -pop.get_percentile(0.10) + pt.mean_dist
+            pt.perc90_dist =  pop.get_percentile(0.90).distance - pt.mean_dist
+            pt.perc10_dist = -pop.get_percentile(0.10).distance + pt.mean_dist
             if i==0:
                 pt.eval = 0
             else:
@@ -64,8 +64,8 @@ def plot_all(ax, pop_histories):
             else: 
                 evals.append(evals[i-1] + pop.f_evals)
 
-            perc90.append(pop.get_percentile(0.90)-dist[i])
-            perc10.append(-pop.get_percentile(0.10)+dist[i])
+            perc90.append(pop.get_percentile(0.90).distance-dist[i])
+            perc10.append(-pop.get_percentile(0.10).distance+dist[i])
 
         dist_err = ax.errorbar(evals[5::5], dist[5::5], yerr=[perc10[5::5], perc90[5::5]], fmt='.', capsize=2)
         color = dist_err.lines[0].get_color() # Line2D of the line

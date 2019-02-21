@@ -14,11 +14,6 @@ class Route(AbstractIndividual):
         return self
 
 
-    def copy(self):
-        '''Copies this individual'''
-        return Route(self.genes.copy())
-
-
     @property
     def distance(self):
         '''The distance of this route'''
@@ -29,32 +24,28 @@ class Route(AbstractIndividual):
         return d
 
 
-    def calc_fitness(self):
+    def compute_fitness(self):
         '''Calculates fitness of this route on scale of 0 to 1
         Need a function to do so to keep track of the
         number of times this function is called'''
-        self._fitness = 1 / self.distance
-
-
-    @property
-    def fitness(self):
-        '''retreives the fitness of this route.
-        You must call the "calc_fitness" method before
-        accessing this property'''
-        assert self._fitness is not None
-        return self._fitness
+        self.fitness = 1 / self.distance
 
 
     @property
     def x(self):
-        '''returns x as a list of city data to plot'''
+        '''returns x as a list of city data x coordinates'''
         return [city.x for city in self.genes] + [self.genes[0].x]
 
 
     @property
     def y(self):
-        '''returns y as a list of city data to plot'''
+        '''returns y as a list of city data y coordinates'''
         return [city.y for city in self.genes] + [self.genes[0].y]
+
+
+    def make_training_data(self):
+        '''Converts itself into a list of number to be used as training data'''
+        return self.x + self.y
     
 
 
@@ -149,7 +140,7 @@ def mutate_1(child, chance):
         if random.random() < chance:
             r = random.randint(0, len(child.genes)-1)
             child.genes[i], child.genes[r] = child.genes[r], child.genes[i]
-            child._fitness = None
+            child.clear_fitness()
 
 
 def mutate_2(child, chance):
@@ -158,7 +149,7 @@ def mutate_2(child, chance):
         A = random.randint(0, len(child.genes)-1)
         B = random.randint(0, len(child.genes)-1)
         child.genes[A], child.genes[B] = child.genes[B], child.genes[A]
-        child._fitness = None
+        child.clear_fitness()
 
 
 def select(population, tourny_size:int=2):

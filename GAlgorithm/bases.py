@@ -5,13 +5,11 @@ from math import ceil
 from statistics import pstdev
 
 
-
-
 class AbstractIndividual:
     def __init__(self, genes):
         '''An individual has a list of defining properties, known as genes. pass them in here.'''
         self._genes = genes
-        self._fitness = None
+        self.fitness_is_unset = True
 
 
     @property
@@ -22,7 +20,39 @@ class AbstractIndividual:
     @genes.setter
     def genes(self, val):
         self._genes = val
-        self._fitness = None
+        self.clear_fitness()
+
+
+    @property
+    def fitness(self):
+        '''retreives the fitness of this route.
+        You must call the "calc_fitness" method before
+        accessing this property'''
+        return self._fitness
+
+
+    @fitness.setter
+    def fitness(self, val):
+        '''Sets the fitness value'''
+        self._fitness = val
+        self.fitness_is_unset = False
+
+
+    def clear_fitness(self):
+        '''Clears the fitness value.
+        This forces a re-computation of the fitness'''
+        self.fitness_is_unset = True
+
+
+    def compute_fitness(self):
+        '''Calculates fitness of this individual.
+        Must assign the self.fitness value'''
+        assert 'You must implement the "compute_fitness" method in the Individual class'
+
+
+    def copy(self):
+        '''Copies this individual based on whatever it is subclassed into'''
+        return type(self)(self.genes.copy())
 
 
     def serialize(self):
@@ -41,10 +71,9 @@ class AbstractIndividual:
 
 
 class Population:
-    def __init__(self, routes:list):
-        '''The population of possible routes the salesman can take
-        param cities list: list of cities for the route'''
-        self.individuals = routes
+    def __init__(self, individuals:list):
+        '''The population of individuals'''
+        self.individuals = individuals
         self.original_size = len(self.individuals)
         self.f_evals = 0
 
@@ -64,8 +93,8 @@ class Population:
         Returns the number of times the objective function was run'''
         count = 0
         for i in self.individuals:
-            if i._fitness is None:
-                i.calc_fitness()
+            if i.fitness_is_unset:
+                i.compute_fitness()
                 count += 1
             else:
                 pass
@@ -74,7 +103,7 @@ class Population:
 
 
     def rank(self):
-        '''Ranks the routes within this population'''
+        '''Ranks the list of individuals within this population'''
         self.individuals.sort(key=operator.attrgetter('fitness'), reverse=True)
 
 
@@ -134,9 +163,9 @@ class Population:
 
 
     def get_percentile(self, k):
-        '''returns the distance of the kth percentile individual'''
+        '''returns the kth percentile individual'''
         index = ceil(k * len(self.individuals))
-        return [r.distance for i,r in enumerate(self.individuals) if i == index][0]
+        return [r for i,r in enumerate(self.individuals) if i == index][0]
 
 
     def get_standard_deviation(self):
