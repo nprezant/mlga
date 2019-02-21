@@ -50,6 +50,11 @@ class AbstractIndividual:
         assert 'You must implement the "compute_fitness" method in the Individual class'
 
 
+    def make_training_data(self):
+        '''Makes X training data for the classifier'''
+        assert 'You must implement the "make_training_data" method to use the classifier'
+
+
     def copy(self):
         '''Copies this individual based on whatever it is subclassed into'''
         return type(self)(self.genes.copy())

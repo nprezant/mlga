@@ -6,8 +6,16 @@ from sklearn.naive_bayes import GaussianNB
 from .bases import Population
 
 
-def default_select(population, tourny_size):
-    return None
+def default_select(*args):
+    assert 'you must assign a "select" method to the GeneticAlgorithm'
+
+
+def default_crossover(*args):
+    assert 'you must assign a "select" method to the GeneticAlgorithm'
+
+
+def default_mutate(*args):
+    assert 'you must assign a "select" method to the GeneticAlgorithm'
 
 
 def cull(keep:int, *args:Population):
@@ -27,9 +35,9 @@ class GeneticAlgorithm:
         self.f_eval_max = f_eval_max
         self.reset()
 
-        self.select = lambda *args: None
-        self.crossover = lambda *args: None
-        self.mutate = lambda *args: None
+        self.select = default_select
+        self.crossover = default_crossover
+        self.mutate = default_mutate
         
 
     def evolve(self, population, tourny_size, mutation_rate):
