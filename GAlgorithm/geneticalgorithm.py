@@ -31,11 +31,12 @@ def cull(keep:int, *args:Population):
 
 
 class GeneticAlgorithm:
-    def __init__(self, initial_population, tourny_size=2, mutation_rate=0.05, f_eval_max=4000):
+    def __init__(self, initial_population, tourny_size=2, mutation_rate=0.05, f_eval_max=4000, fitness_params={}):
         self.initial_population = initial_population
         self.mutation_rate = mutation_rate
         self.tourny_size = tourny_size
         self.f_eval_max = f_eval_max
+        self.fitness_params = fitness_params
         self.reset()
 
         self.select = default_select
@@ -68,7 +69,7 @@ class GeneticAlgorithm:
 
         while self.f_evals < self.f_eval_max:
             # run objective function and keep count
-            objective_calls = new_population.evaluate()
+            objective_calls = new_population.evaluate(self.fitness_params)
             self.f_evals += objective_calls
 
             # only keep the best of the old and new population
@@ -97,7 +98,7 @@ class GeneticAlgorithm:
 
         while self.f_evals < self.f_eval_max:
             # run objective function and keep count
-            objective_calls = new_population.evaluate()
+            objective_calls = new_population.evaluate(self.fitness_params)
             self.f_evals += objective_calls
 
             # only keep the best of the old and new population

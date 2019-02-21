@@ -77,10 +77,6 @@ class City:
         return f'City ({self.x}, {self.y})'
 
 
-    def __repr__(self):
-        return f'City({self.x},{self.y})'
-
-
 def random_population(cities, size):
     '''Creates a random population of routes
     cities: cities for the routes

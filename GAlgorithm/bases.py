@@ -93,13 +93,14 @@ class Population:
         return random.choice(self.individuals)
 
 
-    def evaluate(self) -> int:
+    def evaluate(self, fitness_params={}) -> int:
         '''Runs the objective function on the individuals in place
-        Returns the number of times the objective function was run'''
+        Returns the number of times the objective function was run
+        Will pass the "fitness_params" into the fitness function if specified'''
         count = 0
         for i in self.individuals:
             if i.fitness_is_unset:
-                i.compute_fitness()
+                i.compute_fitness(*fitness_params)
                 count += 1
             else:
                 pass
