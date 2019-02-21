@@ -24,7 +24,7 @@ class Route(AbstractIndividual):
         return d
 
 
-    def compute_fitness(self):
+    def compute_fitness2(self):
         '''Calculates fitness of this route on scale of 0 to 1
         Need a function to do so to keep track of the
         number of times this function is called'''

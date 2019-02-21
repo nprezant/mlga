@@ -7,15 +7,18 @@ from .bases import Population
 
 
 def default_select(*args):
-    assert 'you must assign a "select" method to the GeneticAlgorithm'
+    assert False, 'you must assign a "select" method to the GeneticAlgorithm'
+    return 1
 
 
 def default_crossover(*args):
-    assert 'you must assign a "select" method to the GeneticAlgorithm'
+    assert False, 'you must assign a "select" method to the GeneticAlgorithm'
+    return 1
 
 
 def default_mutate(*args):
-    assert 'you must assign a "select" method to the GeneticAlgorithm'
+    assert False, 'you must assign a "select" method to the GeneticAlgorithm'
+    return 1
 
 
 def cull(keep:int, *args:Population):

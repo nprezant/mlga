@@ -47,12 +47,12 @@ class AbstractIndividual:
     def compute_fitness(self):
         '''Calculates fitness of this individual.
         Must assign the self.fitness value'''
-        assert 'You must implement the "compute_fitness" method in the Individual class'
+        assert False, 'You must implement the "compute_fitness" method in the Individual class'
 
 
     def make_training_data(self):
         '''Makes X training data for the classifier'''
-        assert 'You must implement the "make_training_data" method to use the classifier'
+        assert False, 'You must implement the "make_training_data" method to use the classifier'
 
 
     def copy(self):
