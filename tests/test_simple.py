@@ -17,7 +17,7 @@ class Individual(AbstractIndividual):
 
 
     def __repr__(self):
-        return str([g.value for g in self.genes])
+        return ''.join([g.value for g in self.genes])
 
     def __str__(self):
         return self.__repr__()
@@ -62,12 +62,16 @@ def cross(p1, p2):
     idx_from_p1 = random.sample(range(len(p1.genes)), k=num_from_p1)
     genes_from_p1 = [p1.genes[x] for x in idx_from_p1]
 
-    # get the rest from the other parent (flip trues and falses)
+    # get the rest from the other parent
     idx_from_p2 = [i for i in range(len(p1.genes)) if (i not in idx_from_p1)]
     genes_from_p2 = [p2.genes[x] for x in idx_from_p2]
 
     # combine p1 and p2 genes
-    child_genes = genes_from_p1 + genes_from_p2
+    idx = idx_from_p1 + idx_from_p2
+    scrambled_genes = genes_from_p1 + genes_from_p2
+
+    # sorted genes out
+    child_genes = [g for _,g in sorted(zip(idx, scrambled_genes))]
     return Individual(child_genes)
 
 
@@ -83,10 +87,10 @@ def mutate(children, chance):
 
 def mutate_1(child, chance):
     '''Mutates each gene in child with a chance of chance'''
-    for gene in child.genes:
-        if random.random() < chance:
-            gene.mutate()
-            child.clear_fitness()
+    if random.random() < chance:
+        gene = random.choice(child.genes)
+        gene.mutate()
+        child.clear_fitness()
 
     
 def initialize_pop(size, target, allowed_params):
@@ -101,10 +105,11 @@ def initialize_pop(size, target, allowed_params):
 
 def run():
     '''runs a new string pattern matching GA'''
-    vals = 'helloworld '
-    target = 'Hello world'
-    init_pop = initialize_pop(100, target, vals)
-    ga = GeneticAlgorithm(init_pop, 2, 0.002, 20000)
+    vals = 'Helloworld '
+    vals = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ !,.'
+    target = 'I work with short sentences..'
+    init_pop = initialize_pop(500, target, vals)
+    ga = GeneticAlgorithm(init_pop, 2, 0, 30000)
     ga.fitness_params = {target}
     ga.select = select
     ga.crossover = crossover
@@ -112,7 +117,7 @@ def run():
     ga.run_without_ml()
 
     for p in ga.pop_history:
-        print(p.best_individual)
+        print('{}, {}'.format(p.best_individual.fitness, p.best_individual))
 
 if __name__ == "__main__":
     run()
