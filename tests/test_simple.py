@@ -24,14 +24,19 @@ class Individual(AbstractIndividual):
 
 
 class Gene:
-    def __init__(self, rng:list):
+    def __init__(self, rng:list, val=None):
+        self.value = val
         self.rng = rng
-        self.mutate()
 
 
     def mutate(self):
-        # pick random value from the list of allowed values
+        ''' pick random value from the list of allowed values'''
         self.value = random.choice(self.rng)
+
+
+    def copy(self):
+        '''Makes a copy of itself'''
+        return Gene(self.rng, self.value)
 
 
 def select(population, tourny_size:int=2):
@@ -79,7 +84,6 @@ def mutate(children, chance):
     '''Mutates the children, given the chance
     children: list of route children
     chance: chance of mutation btw 0 and 1'''
-
     for child in children.individuals:
         mutate_1(child, chance)
     return Population(children.individuals)
@@ -89,6 +93,7 @@ def mutate_1(child, chance):
     '''Mutates each gene in child with a chance of chance'''
     if random.random() < chance:
         gene = random.choice(child.genes)
+        gene = gene.copy()
         gene.mutate()
         child.clear_fitness()
 
@@ -98,6 +103,7 @@ def initialize_pop(size, target, allowed_params):
     individuals = []
     for _ in range(size):
         genes = [Gene(allowed_params) for _ in target]
+        [gene.mutate() for gene in genes]
         individuals.append(Individual(genes))
     pop = Population(individuals)
     return pop
@@ -105,11 +111,10 @@ def initialize_pop(size, target, allowed_params):
 
 def run():
     '''runs a new string pattern matching GA'''
-    vals = 'Helloworld '
     vals = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ !,.'
-    target = 'I work with short sentences..'
+    target = 'Hello world, I currently work.'
     init_pop = initialize_pop(500, target, vals)
-    ga = GeneticAlgorithm(init_pop, 2, 0, 30000)
+    ga = GeneticAlgorithm(init_pop, 2, 0.02, 30000)
     ga.fitness_params = {target}
     ga.select = select
     ga.crossover = crossover
