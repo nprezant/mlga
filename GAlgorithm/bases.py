@@ -98,9 +98,9 @@ class Population:
         Returns the number of times the objective function was run
         Will pass the "fitness_params" into the fitness function if specified'''
         count = 0
-        for i in self.individuals:
-            if i.fitness_is_unset:
-                i.compute_fitness(*fitness_params)
+        for x in self.individuals:
+            if x.fitness_is_unset:
+                x.compute_fitness(*fitness_params)
                 count += 1
             else:
                 pass
