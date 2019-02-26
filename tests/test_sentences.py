@@ -16,13 +16,6 @@ class Sentence(AbstractIndividual):
         return fitness
 
 
-    def __repr__(self):
-        return ''.join([str(g) for g in self.genes])
-
-    def __str__(self):
-        return self.__repr__()
-
-
 class Gene:
     def __init__(self, rng:list, val=None):
         self.value = val

@@ -71,8 +71,12 @@ class AbstractIndividual:
         return len(self.genes)
 
 
+    def __repr__(self):
+        return ''.join([str(g) for g in self.genes])
+        
+
     def __str__(self):
-        return [c for c in self.genes]
+        return self.__repr__()
 
 
 class Population:
