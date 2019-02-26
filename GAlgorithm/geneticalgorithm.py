@@ -9,7 +9,7 @@ from .evolution import (
     tournament_selection, 
     gene_based_mutation,
     cull)
-    
+
 
 class GeneticAlgorithm:
     def __init__(self, initial_population, fitness_function, tourny_size=2, mutation_rate=0.05, f_eval_max=4000, fitness_params={}):
@@ -138,7 +138,7 @@ class GeneticAlgorithm:
         delta = max_fitness - min_fitness
         cutoff = max_fitness - (delta * 0.5) # only keep the top 20%
 
-        # make Y training data in the form of ['good', 'bad', 'bad', ...]
+        # make Y training data in the form of ['good', 'bad', 'bad', ...] # use same culling function?
         y_train = ['good' if i.fitness > cutoff else 'bad' for i in combined_pop.individuals]
 
         self.classifier.fit(x_train, y_train)
@@ -147,7 +147,7 @@ class GeneticAlgorithm:
     def classify(self, pop):
         '''Predicts whether individivuals in the population will
         be good or bad, then returns them'''
-        x_data = [c.x + c.y for c in pop.individuals]
+        x_data = [c.make_training_data() for c in pop.individuals]
         predictions = self.classifier.predict(x_data)
         good_indivs = [pop.individuals[i] for i,p in enumerate(predictions) if p == 'good']
         bad_indivs  = [pop.individuals[i] for i,p in enumerate(predictions) if p == 'bad']

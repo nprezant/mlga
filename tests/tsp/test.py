@@ -4,19 +4,19 @@ import json
 
 from GAlgorithm import (
     GeneticAlgorithm,
-    dump
-)
+    dump)
 
-from .tsp_bases import (
+from .population import (
     City,
     Route, 
-    random_population, 
-    select, 
+    compute_fitness,
+    random_population)
+
+from .evolution import (
     crossover, 
-    mutate, 
-    compute_fitness)
+    mutate)
     
-from .tsp_plot import plot_histories
+from .plot import plot_histories
 
 
 def decode_route(dct):
@@ -41,7 +41,7 @@ def run_new_ga():
         mutation_rate=0.05,
         f_eval_max=3500)
 
-    ga.select = select
+    #ga.select = select
     ga.crossover = crossover
     ga.mutate = mutate
 
