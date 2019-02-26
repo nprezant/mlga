@@ -77,7 +77,11 @@ def cross(p1, p2):
 
     # sort genes out
     child_genes = [g for _,g in sorted(zip(idx, scrambled_genes))]
-    return Sentence(child_genes)
+
+    # make new individual
+    individ = p1.copy()
+    individ.genes = child_genes
+    return individ
 
 
 def mutate(children, chance):
@@ -112,7 +116,7 @@ def initialize_pop(size, target, allowed_params):
 def run():
     '''runs a new string pattern matching GA'''
     vals = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ !,.'
-    target = 'Hello world, I currently work.'
+    target = 'Hello world, I mostly work.'
     init_pop = initialize_pop(500, target, vals)
     ga = GeneticAlgorithm(init_pop, 2, 0.05, 30000)
     ga.fitness_params = {target}
