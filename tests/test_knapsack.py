@@ -1,7 +1,7 @@
 
 import random
 
-from GAlgorithm import AbstractIndividual, Population, GeneticAlgorithm
+from GAlgorithm import AbstractIndividual, Population, GeneticAlgorithm, initialize_population
 
 class Knapsack(AbstractIndividual):
     '''List of letters that form a sentence'''
@@ -25,30 +25,6 @@ class Knapsack(AbstractIndividual):
         return total_value
 
 
-class Gene:
-    def __init__(self, rng:list, value=None):
-        self.value = value
-        self.rng = rng
-
-
-    def mutate(self):
-        ''' pick random value from the list of allowed values'''
-        self.value = random.choice(self.rng)
-
-
-    def copy(self):
-        '''Makes a copy of itself'''
-        return Gene(self.rng, self.value)
-
-
-    def __str__(self):
-        return str(self.value)
-
-
-    def __repr__(self):
-        return self.__str__()
-
-
 class Item:
     def __init__(self, value, weight):
         self.value = value
@@ -57,18 +33,6 @@ class Item:
     
     def __str__(self):
         return f'value: {self.value}, weight: {self.weight}'
-
-    
-def initialize_pop(pop_size, indiv_size, allowed_params):
-    '''Initialize the population'''
-    individuals = []
-    for _ in range(pop_size):
-        genes = [Gene(allowed_params) for _ in range(indiv_size)]
-        for gene in genes:
-            gene.value = False
-        individuals.append(Knapsack(genes))
-    pop = Population(individuals)
-    return pop
 
 
 def run():
@@ -79,7 +43,7 @@ def run():
     print([str(i) for i in items])
 
     vals = [True, False]
-    init_pop = initialize_pop(500, 30, vals)
+    init_pop = initialize_population(500, 30, vals, Knapsack)
     ga = GeneticAlgorithm(init_pop, 2, 0.05, 20000)
     ga.fitness_params = {'items':items, 'max_weight':max_weight}
     ga.run_without_ml()

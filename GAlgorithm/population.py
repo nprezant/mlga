@@ -5,6 +5,30 @@ from math import ceil
 from statistics import pstdev
 
 
+class Gene:
+    def __init__(self, rng:list, value=None):
+        self.value = value
+        self.rng = rng
+
+
+    def mutate(self):
+        ''' pick random value from the list of allowed values'''
+        self.value = random.choice(self.rng)
+
+
+    def copy(self):
+        '''Makes a copy of itself'''
+        return Gene(self.rng, self.value)
+
+
+    def __str__(self):
+        return str(self.value)
+
+
+    def __repr__(self):
+        return self.__str__()
+
+
 class AbstractIndividual:
     def __init__(self, genes):
         '''An individual has a list of defining properties, known as genes. pass them in here.'''
@@ -191,3 +215,15 @@ class Population:
 
     def __repr__(self):
         return f'Pop; routes: {len(self.individuals)}; cities: {len(self.individuals[0])}'
+
+
+def initialize_population(pop_size, indiv_size, allowed_params, Individual, Gene=Gene):
+    '''Initialize the population'''
+    individuals = []
+    for _ in range(pop_size):
+        genes = [Gene(allowed_params) for _ in range(indiv_size)]
+        for gene in genes:
+            gene.value = False
+        individuals.append(Individual(genes))
+    pop = Population(individuals)
+    return pop
