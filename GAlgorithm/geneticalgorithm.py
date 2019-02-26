@@ -4,32 +4,12 @@ import random
 from sklearn.naive_bayes import GaussianNB
 
 from .population import Population
-from .evolution import order_independent_crossover, tournament_selection, mutation
-
-
-def default_select(*args):
-    assert False, 'you must assign a "select" method to the GeneticAlgorithm'
-    return 1
-
-
-def default_crossover(*args):
-    assert False, 'you must assign a "select" method to the GeneticAlgorithm'
-    return 1
-
-
-def default_mutate(*args):
-    assert False, 'you must assign a "select" method to the GeneticAlgorithm'
-    return 1
-
-
-def cull(keep:int, *args:Population):
-    '''Keeps only the best *keep* number of individuals in the populations'''
-    total_pop = Population([])
-    for p in args:
-        total_pop.add(p)
-    total_pop.rank()
-    return Population(total_pop.individuals[:keep])
-
+from .evolution import (
+    order_independent_crossover, 
+    tournament_selection, 
+    gene_based_mutation,
+    cull)
+    
 
 class GeneticAlgorithm:
     def __init__(self, initial_population, fitness_function, tourny_size=2, mutation_rate=0.05, f_eval_max=4000, fitness_params={}):
@@ -43,7 +23,7 @@ class GeneticAlgorithm:
 
         self.select = tournament_selection
         self.crossover = order_independent_crossover
-        self.mutate = mutation
+        self.mutate = gene_based_mutation
         
 
     def evolve(self, population, tourny_size, mutation_rate):

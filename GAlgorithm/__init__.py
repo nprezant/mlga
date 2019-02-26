@@ -7,4 +7,4 @@ from .population import (
 
 from .geneticalgorithm import GeneticAlgorithm
 
-from .saver import load, dump
+from .saver import dump

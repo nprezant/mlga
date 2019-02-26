@@ -4,6 +4,15 @@ import random
 from .population import Population
 
 
+def cull(keep:int, *args:Population):
+    '''Keeps only the best *keep* number of individuals in the populations'''
+    total_pop = Population([])
+    for p in args:
+        total_pop.add(p)
+    total_pop.rank()
+    return Population(total_pop.individuals[:keep])
+
+
 def tournament_selection(population, tourny_size:int=2):
     '''Selects a parent population from the population
     Uses a tournament to select parents'''
@@ -50,7 +59,7 @@ def cross(p1, p2):
     return individ
 
 
-def mutation(children, chance):
+def gene_based_mutation(children, chance):
     '''Mutates the children, given the chance
     children: list of route children
     chance: chance of mutation btw 0 and 1'''
