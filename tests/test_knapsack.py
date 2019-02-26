@@ -1,7 +1,7 @@
 
 import random
 
-from GAlgorithm import AbstractIndividual, Population, GeneticAlgorithm, initialize_population
+from GAlgorithm import Population, GeneticAlgorithm, initialize_population
 
 def fitness(knapsack, items, max_weight):
     '''Computes fitness of the string compared to the base string'''
