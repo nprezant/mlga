@@ -104,7 +104,7 @@ class Population:
         count = 0
         for x in self.individuals:
             if x.fitness_is_unset:
-                x.compute_fitness(*fitness_params)
+                x.compute_fitness(**fitness_params)
                 count += 1
             else:
                 pass

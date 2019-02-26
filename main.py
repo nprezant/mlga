@@ -1,4 +1,4 @@
 
-from tests.test_simple import run
+from tests.test_knapsack import run
 
 run()

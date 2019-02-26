@@ -57,7 +57,7 @@ def run():
     target = 'Hello world, I mostly work.'
     init_pop = initialize_pop(500, target, vals)
     ga = GeneticAlgorithm(init_pop, 2, 0.05, 30000)
-    ga.fitness_params = {target}
+    ga.fitness_params = {'target':target}
     ga.run_without_ml()
 
     for p in ga.pop_history:

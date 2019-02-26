@@ -63,7 +63,10 @@ def mutate_child(child, chance):
     '''Mutates each gene in child with a chance of chance
     Requires that the gene has a mutation and copy method.'''
     if random.random() < chance:
-        gene = random.choice(child.genes)
-        gene = gene.copy()
-        gene.mutate()
+        gene_index = random.choice(range(len(child.genes)))
+
+        new_gene = child.genes[gene_index].copy()
+        new_gene.mutate()
+
+        child.genes[gene_index] = new_gene
         child.clear_fitness()
