@@ -3,26 +3,22 @@ import random
 
 from GAlgorithm import AbstractIndividual, Population, GeneticAlgorithm, initialize_population
 
-class Knapsack(AbstractIndividual):
-    '''List of letters that form a sentence'''
-
-    def compute_fitness(self, items, max_weight):
-        '''Computes fitness of the string compared to the base string'''
-        total_value = 0
-        total_weight = 0
-        for i,g in enumerate(self.genes):
-            
-            if g.value == True:
-                # only count genes that are included
-                total_value += items[i].value
-                total_weight += items[i].weight
+def fitness(knapsack, items, max_weight):
+    '''Computes fitness of the string compared to the base string'''
+    total_value = 0
+    total_weight = 0
+    for i,g in enumerate(knapsack.genes):
         
-        if total_weight > max_weight:
-            # can't carry something this heavy
-            total_value = 0
+        if g.value == True:
+            # only count genes that are included
+            total_value += items[i].value
+            total_weight += items[i].weight
+    
+    if total_weight > max_weight:
+        # can't carry something this heavy
+        total_value = 0
 
-        self.fitness = total_value
-        return total_value
+    return total_value
 
 
 class Item:
@@ -43,8 +39,8 @@ def run():
     print([str(i) for i in items])
 
     vals = [True, False]
-    init_pop = initialize_population(500, 30, vals, Knapsack, default_val=False)
-    ga = GeneticAlgorithm(init_pop, 2, 0.05, 20000)
+    init_pop = initialize_population(500, 30, vals, default_val=False)
+    ga = GeneticAlgorithm(init_pop, fitness, 2, 0.05, 20000)
     ga.fitness_params = {'items':items, 'max_weight':max_weight}
     ga.run_without_ml()
 

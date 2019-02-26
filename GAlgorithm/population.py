@@ -121,14 +121,14 @@ class Population:
         return random.choice(self.individuals)
 
 
-    def evaluate(self, fitness_params={}) -> int:
+    def evaluate(self, fitness_function, fitness_params={}) -> int:
         '''Runs the objective function on the individuals in place
         Returns the number of times the objective function was run
         Will pass the "fitness_params" into the fitness function if specified'''
         count = 0
         for x in self.individuals:
             if x.fitness_is_unset:
-                x.fitness = x.compute_fitness(**fitness_params)
+                x.fitness = fitness_function(x, **fitness_params)
                 count += 1
             else:
                 pass
@@ -217,7 +217,7 @@ class Population:
         return f'Pop; routes: {len(self.individuals)}; cities: {len(self.individuals[0])}'
 
 
-def initialize_population(pop_size, indiv_size, allowed_params, Individual, default_val=None, Gene=Gene):
+def initialize_population(pop_size, indiv_size, allowed_params, Individual=AbstractIndividual, default_val=None, Gene=Gene):
     '''Initialize the population'''
     individuals = []
     for _ in range(pop_size):
