@@ -2,10 +2,21 @@
 
 import json
 
-from .tsp_bases import City, Route, random_population, select, crossover, mutate
-from .tsp_plot import plot_histories
+from GAlgorithm import (
+    GeneticAlgorithm,
+    dump
+)
 
-import GAlgorithm
+from .tsp_bases import (
+    City,
+    Route, 
+    random_population, 
+    select, 
+    crossover, 
+    mutate, 
+    compute_fitness)
+    
+from .tsp_plot import plot_histories
 
 
 def decode_route(dct):
@@ -23,10 +34,12 @@ def run_new_ga():
     cities = decode_route(cities_dict)
     init_pop = random_population(cities,100)
 
-    ga = GAlgorithm.GeneticAlgorithm(initial_population=init_pop,
-                          tourny_size=2, 
-                          mutation_rate=0.05,
-                          f_eval_max=3500)
+    ga = GeneticAlgorithm(
+        initial_population=init_pop,
+        fitness_function=compute_fitness,
+        tourny_size=2, 
+        mutation_rate=0.05,
+        f_eval_max=3500)
 
     ga.select = select
     ga.crossover = crossover
@@ -35,20 +48,20 @@ def run_new_ga():
     ga.run_without_ml()
     hist1 = ga.pop_history.copy()
     for i in hist1:
-        i.evaluate()
+        i.evaluate(compute_fitness)
 
-    ga.run_with_ml()
-    hist2 = ga.pop_history.copy()
-    for i in hist2:
-        i.evaluate()
+    # ga.run_with_ml()
+    # hist2 = ga.pop_history.copy()
+    # for i in hist2:
+    #     i.evaluate(compute_fitness)
 
-    plot_histories([(hist1, 'GA'), (hist2, 'GA with ML')])
+    plot_histories([(hist1, 'GA')]) #, (hist2, 'GA with ML')
 
 
 def make_cities(numcities:int):
     cities = [City().randomize(0,200,0,200) for i in range(numcities)]
     route = Route(cities)
-    GAlgorithm.dump(route, f'cities\\newcity{numcities}.txt')
+    dump(route, f'cities\\newcity{numcities}.txt')
 
 
 if __name__ == '__main__':
