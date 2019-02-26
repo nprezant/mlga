@@ -36,14 +36,14 @@ class Item:
 
 
 def run():
-    '''runs a new string pattern matching GA'''
+    '''runs a new knapsack problem GA'''
     items = [Item(random.randint(1,30), random.randint(1,30)) for _ in range(30)]
     max_weight = 30
 
     print([str(i) for i in items])
 
     vals = [True, False]
-    init_pop = initialize_population(500, 30, vals, Knapsack)
+    init_pop = initialize_population(500, 30, vals, Knapsack, default_val=False)
     ga = GeneticAlgorithm(init_pop, 2, 0.05, 20000)
     ga.fitness_params = {'items':items, 'max_weight':max_weight}
     ga.run_without_ml()
@@ -57,7 +57,7 @@ def run():
                 total_value += items[i].value
                 total_weight += items[i].weight
 
-        print('{}, {}, {}'.format(total_value, total_weight, p.best_individual))
+        print('Knapsack: value={}, weight={}'.format(total_value, total_weight))
 
 if __name__ == "__main__":
     run()
