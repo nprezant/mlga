@@ -3,8 +3,8 @@ import random
 
 from GAlgorithm import AbstractIndividual, Population, GeneticAlgorithm
 
-class Individual(AbstractIndividual):
-    '''List of genes I guess'''
+class Sentence(AbstractIndividual):
+    '''List of letters that form a sentence'''
 
     def compute_fitness(self, target):
         '''Computes fitness of the string compared to the base string'''
@@ -75,9 +75,9 @@ def cross(p1, p2):
     idx = idx_from_p1 + idx_from_p2
     scrambled_genes = genes_from_p1 + genes_from_p2
 
-    # sorted genes out
+    # sort genes out
     child_genes = [g for _,g in sorted(zip(idx, scrambled_genes))]
-    return Individual(child_genes)
+    return Sentence(child_genes)
 
 
 def mutate(children, chance):
@@ -104,7 +104,7 @@ def initialize_pop(size, target, allowed_params):
     for _ in range(size):
         genes = [Gene(allowed_params) for _ in target]
         [gene.mutate() for gene in genes]
-        individuals.append(Individual(genes))
+        individuals.append(Sentence(genes))
     pop = Population(individuals)
     return pop
 
@@ -114,7 +114,7 @@ def run():
     vals = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ !,.'
     target = 'Hello world, I currently work.'
     init_pop = initialize_pop(500, target, vals)
-    ga = GeneticAlgorithm(init_pop, 2, 0.02, 30000)
+    ga = GeneticAlgorithm(init_pop, 2, 0.05, 30000)
     ga.fitness_params = {target}
     ga.select = select
     ga.crossover = crossover
