@@ -3,8 +3,8 @@ import random
 
 from GAlgorithm import Population, GeneticAlgorithm, initialize_population
 
-def fitness(knapsack, items, max_weight):
-    '''Computes fitness of the string compared to the base string'''
+def sum_knapsack(knapsack, items):
+    '''Finds the total value and weight of a knapsack'''
     total_value = 0
     total_weight = 0
     for i,g in enumerate(knapsack.genes):
@@ -14,11 +14,19 @@ def fitness(knapsack, items, max_weight):
             total_value += items[i].value
             total_weight += items[i].weight
     
-    if total_weight > max_weight:
-        # can't carry something this heavy
-        total_value = 0
+    return total_value, total_weight
 
-    return total_value
+
+def fitness(knapsack, items, max_weight):
+    '''Computes fitness of the string compared to the base string'''
+    
+    value, weight = sum_knapsack(knapsack, items)
+    
+    if weight > max_weight:
+        # can't carry something this heavy
+        value = 0
+
+    return value
 
 
 class Item:
@@ -45,15 +53,9 @@ def run():
     ga.run_without_ml()
 
     for p in ga.pop_history:
-        total_value = 0
-        total_weight = 0
-        for i,g in enumerate(p.best_individual.genes):
-            if g.value == True:
-                # only count genes that are included
-                total_value += items[i].value
-                total_weight += items[i].weight
+        value, weight = sum_knapsack(p.best_individual, items)
+        print('Knapsack: value={}, weight={}'.format(value, weight))
 
-        print('Knapsack: value={}, weight={}'.format(total_value, total_weight))
 
 if __name__ == "__main__":
     run()
