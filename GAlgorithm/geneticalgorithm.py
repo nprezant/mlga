@@ -3,7 +3,8 @@ import random
 
 from sklearn.naive_bayes import GaussianNB
 
-from .bases import Population
+from .population import Population
+from .evolution import order_independent_crossover, tournament_selection, mutation
 
 
 def default_select(*args):
@@ -39,9 +40,9 @@ class GeneticAlgorithm:
         self.fitness_params = fitness_params
         self.reset()
 
-        self.select = default_select
-        self.crossover = default_crossover
-        self.mutate = default_mutate
+        self.select = tournament_selection
+        self.crossover = order_independent_crossover
+        self.mutate = mutation
         
 
     def evolve(self, population, tourny_size, mutation_rate):
