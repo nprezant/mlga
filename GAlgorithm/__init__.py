@@ -8,3 +8,5 @@ from .population import (
 from .geneticalgorithm import GeneticAlgorithm
 
 from .saver import dump
+
+from .plot import fitness_plot
