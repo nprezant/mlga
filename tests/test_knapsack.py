@@ -1,7 +1,11 @@
 
 import random
 
-from GAlgorithm import Population, GeneticAlgorithm, initialize_population
+from GAlgorithm import (
+    Population, 
+    GeneticAlgorithm, 
+    initialize_population,
+    fitness_plot)
 
 def sum_knapsack(knapsack, items):
     '''Finds the total value and weight of a knapsack'''
@@ -61,6 +65,7 @@ def run():
     ga.fitness_params = {'items':items, 'max_weight':max_weight}
 
     ga.run_without_ml()
+    hist1 = (ga.pop_history.copy(), 'Without ML')
     for p in ga.pop_history:
         value, weight = sum_knapsack(p.best_individual, items)
         print('Knapsack: value={}, weight={}'.format(value, weight))
@@ -68,10 +73,12 @@ def run():
     print('now WITH MACHINE LEARNING')
     ga.training_data_function = training_data
     ga.run_with_ml()
+    hist2 = (ga.pop_history.copy(), 'With ML')
     for p in ga.pop_history:
         value, weight = sum_knapsack(p.best_individual, items)
         print('Knapsack: value={}, weight={}'.format(value, weight))
 
+    fitness_plot([hist1, hist2], 'Knapsack Fitness Plot')
 
 if __name__ == "__main__":
     run()
