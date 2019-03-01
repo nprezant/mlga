@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from .population import (
-    AbstractIndividual,
+    Individual,
     Population,
     initialize_population)
 

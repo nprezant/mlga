@@ -10,7 +10,8 @@ from .population import (
     City,
     Route, 
     compute_fitness,
-    random_population)
+    random_population,
+    make_training_data)
 
 from .evolution import (
     crossover, 
@@ -27,7 +28,7 @@ def decode_route(dct):
     return cities
 
 
-def run_new_ga():
+def run():
     '''runs a new genetic algorithm'''
     #cities = [City().randomize(0,200,0,200) for i in range(10)]
     with open('cities\\starter_cities10.txt') as f: cities_dict = json.load(f)
@@ -37,6 +38,7 @@ def run_new_ga():
     ga = GeneticAlgorithm(
         initial_population=init_pop,
         fitness_function=compute_fitness,
+        training_data_function = make_training_data,
         tourny_size=2, 
         mutation_rate=0.05,
         f_eval_max=3500)
@@ -47,15 +49,15 @@ def run_new_ga():
 
     ga.run_without_ml()
     hist1 = ga.pop_history.copy()
-    for i in hist1:
-        i.evaluate(compute_fitness)
+    # for i in hist1:
+    #     i.evaluate(compute_fitness)
 
-    # ga.run_with_ml()
-    # hist2 = ga.pop_history.copy()
+    ga.run_with_ml()
+    hist2 = ga.pop_history.copy()
     # for i in hist2:
     #     i.evaluate(compute_fitness)
 
-    plot_histories([(hist1, 'GA')]) #, (hist2, 'GA with ML')
+    plot_histories([(hist1, 'GA'), (hist2, 'GA with ML')])
 
 
 def make_cities(numcities:int):
@@ -66,6 +68,6 @@ def make_cities(numcities:int):
 
 if __name__ == '__main__':
 
-    run_new_ga()
+    run()
     #make_cities(30)
     

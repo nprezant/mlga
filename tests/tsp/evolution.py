@@ -2,7 +2,7 @@
 
 import random
 
-from GAlgorithm import AbstractIndividual, Population
+from GAlgorithm import Individual, Population
 
 from .population import Route
 

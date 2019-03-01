@@ -29,7 +29,7 @@ class Gene:
         return self.__str__()
 
 
-class AbstractIndividual:
+class Individual:
     def __init__(self, genes):
         '''An individual has a list of defining properties, known as genes. pass them in here.'''
         self._genes = genes
@@ -119,6 +119,15 @@ class Population:
     def random_individual(self):
         '''Returns a random individual from the population'''
         return random.choice(self.individuals)
+
+
+    def better_than(self, other):
+        '''Determines whether this population is better than another population
+        Checks both the best fitness and the mean fitness for improvement
+        Returns boolean'''
+        a = self.mean_fitness > other.mean_fitness
+        b = self.max_fitness > other.max_fitness
+        return a or b
 
 
     def evaluate(self, fitness_function, fitness_params={}) -> int:
@@ -217,7 +226,7 @@ class Population:
         return f'Pop; routes: {len(self.individuals)}; cities: {len(self.individuals[0])}'
 
 
-def initialize_population(pop_size, indiv_size, allowed_params, Individual=AbstractIndividual, default_val=None, Gene=Gene):
+def initialize_population(pop_size, indiv_size, allowed_params, Individual=Individual, default_val=None, Gene=Gene):
     '''Initialize the population'''
     individuals = []
     for _ in range(pop_size):

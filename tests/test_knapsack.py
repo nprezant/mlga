@@ -29,6 +29,11 @@ def fitness(knapsack, items, max_weight):
     return value
 
 
+def training_data(knapsack):
+    '''Turns a knapsack into classifier-digestable training data'''
+    return [int(use_item.value) for use_item in knapsack.genes]
+
+
 class Item:
     def __init__(self, value, weight):
         self.value = value
@@ -48,10 +53,21 @@ def run():
 
     vals = [True, False]
     init_pop = initialize_population(500, 30, vals, default_val=False)
+    for sack in init_pop.individuals:
+        some_items = random.sample(sack.genes, 2)
+        for item in some_items: item.value = True
+
     ga = GeneticAlgorithm(init_pop, fitness, 2, 0.05, 20000)
     ga.fitness_params = {'items':items, 'max_weight':max_weight}
-    ga.run_without_ml()
 
+    ga.run_without_ml()
+    for p in ga.pop_history:
+        value, weight = sum_knapsack(p.best_individual, items)
+        print('Knapsack: value={}, weight={}'.format(value, weight))
+
+    print('now WITH MACHINE LEARNING')
+    ga.training_data_function = training_data
+    ga.run_with_ml()
     for p in ga.pop_history:
         value, weight = sum_knapsack(p.best_individual, items)
         print('Knapsack: value={}, weight={}'.format(value, weight))
