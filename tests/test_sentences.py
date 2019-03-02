@@ -3,7 +3,8 @@ import random
 
 from GAlgorithm import (
     GeneticAlgorithm,
-    initialize_population)
+    initialize_population,
+    fitness_plot)
 
 
 def fitness(sentence, target):
@@ -27,10 +28,20 @@ def run():
     init_pop = initialize_population(500, len(target), allowed_vals)
     ga = GeneticAlgorithm(init_pop, fitness, 2, 0.05, 30000, training_data_function=training_data)
     ga.fitness_params = {'target':target}
-    ga.run_with_ml()
 
+    ga.run_without_ml()
+    hist1 = (ga.pop_history.copy(), 'Without ML')
     for p in ga.pop_history:
         print('Fitness={}: {}'.format(p.best_individual.fitness, p.best_individual))
+
+    print('now WITH MACHINE LEARNING')
+    ga.run_with_ml()
+    hist2 = (ga.pop_history.copy(), 'With ML')
+    for p in ga.pop_history:
+        print('Fitness={}: {}'.format(p.best_individual.fitness, p.best_individual))
+
+    fitness_plot([hist1, hist2], 'Sentence Fitness Plot')
+
 
 if __name__ == "__main__":
     run()
