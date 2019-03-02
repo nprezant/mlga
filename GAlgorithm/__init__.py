@@ -3,7 +3,8 @@
 from .population import (
     Individual,
     Population,
-    initialize_population)
+    initialize_population,
+    Objective)
 
 from .geneticalgorithm import GeneticAlgorithm
 

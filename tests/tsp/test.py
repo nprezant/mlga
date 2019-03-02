@@ -4,7 +4,8 @@ import json
 
 from GAlgorithm import (
     GeneticAlgorithm,
-    dump)
+    dump,
+    fitness_plot)
 
 from .population import (
     City,
@@ -57,6 +58,7 @@ def run():
     # for i in hist2:
     #     i.evaluate(compute_fitness)
 
+    fitness_plot([(hist1, 'GA'), (hist2, 'GA with ML')])
     plot_histories([(hist1, 'GA'), (hist2, 'GA with ML')])
 
 

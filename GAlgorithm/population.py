@@ -3,6 +3,11 @@ import random
 import operator
 from math import ceil
 from statistics import pstdev
+from enum import Enum
+
+class Objective(Enum):
+    MAXIMIZE = 1
+    MINIMIZE = 2
 
 
 class Gene:
@@ -104,6 +109,9 @@ class Individual:
 
 
 class Population:
+
+    objective_type = Objective.MAXIMIZE
+
     def __init__(self, individuals:list):
         '''The population of individuals'''
         self.individuals = individuals
@@ -125,8 +133,12 @@ class Population:
         '''Determines whether this population is better than another population
         Checks both the best fitness and the mean fitness for improvement
         Returns boolean'''
-        a = self.mean_fitness > other.mean_fitness
-        b = self.max_fitness > other.max_fitness
+        if self.objective_type == Objective.MAXIMIZE:
+            a = self.mean_fitness > other.mean_fitness
+            b = self.max_fitness > other.max_fitness
+        else:
+            a = self.mean_fitness < other.mean_fitness
+            b = self.max_fitness < other.max_fitness
         return a or b
 
 
@@ -147,7 +159,10 @@ class Population:
 
     def rank(self):
         '''Ranks the list of individuals within this population'''
-        self.individuals.sort(key=operator.attrgetter('fitness'), reverse=True)
+        if self.objective_type == Objective.MAXIMIZE:
+            self.individuals.sort(key=operator.attrgetter('fitness'), reverse=True)
+        else:
+            self.individuals.sort(key=operator.attrgetter('fitness'), reverse=False)
 
 
     def copy(self):
@@ -162,7 +177,10 @@ class Population:
     @property
     def ranked(self):
         '''Returns the ranked routes, but doesn't change the internal state'''
-        return sorted(self.individuals, key=operator.attrgetter('fitness'), reverse=True)
+        if self.objective_type == Objective.MAXIMIZE:
+            return sorted(self.individuals, key=operator.attrgetter('fitness'), reverse=True)
+        else:
+            return sorted(self.individuals, key=operator.attrgetter('fitness'), reverse=False)
 
 
     @property
@@ -174,7 +192,10 @@ class Population:
     @property
     def best_individual(self):
         '''Returns the individual route with the best fitness in this population'''
-        return max(self.individuals, key=operator.attrgetter('fitness'))
+        if self.objective_type == Objective.MAXIMIZE:
+            return max(self.individuals, key=operator.attrgetter('fitness'))
+        else:
+            return min(self.individuals, key=operator.attrgetter('fitness'))
 
 
     @property
@@ -208,7 +229,7 @@ class Population:
     def get_percentile(self, k):
         '''returns the kth percentile individual'''
         index = ceil(k * len(self.individuals))
-        return [r for i,r in enumerate(self.individuals) if i == index][0]
+        return [r for i,r in enumerate(self.individuals) if i == index][0] # SHOULD THIS BE SELF.RANKED()??
 
 
     def get_standard_deviation(self):

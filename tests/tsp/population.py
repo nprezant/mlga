@@ -2,7 +2,10 @@
 
 import random
 
-from GAlgorithm import Individual, Population
+from GAlgorithm import Individual, Population, Objective
+
+
+Population.objective_type = Objective.MINIMIZE
 
 
 class Route(Individual):
@@ -85,5 +88,6 @@ def compute_fitness(route):
     Need a function to do so to keep track of the
     number of times this function is called'''
     route.distance = distance(route.genes)
-    fitness = 1 / route.distance
+    # fitness = 1 / route.distance
+    fitness = route.distance
     return fitness

@@ -3,7 +3,7 @@ import random
 
 from sklearn.naive_bayes import GaussianNB
 
-from .population import Population
+from .population import Population, Objective
 from .evolution import (
     order_independent_crossover, 
     tournament_selection, 
@@ -165,10 +165,15 @@ class GeneticAlgorithm:
         min_fitness = combined_pop.min_fitness
         max_fitness = combined_pop.max_fitness
         delta = max_fitness - min_fitness
-        cutoff = max_fitness - (delta * 0.5) # only keep the top 20%
 
+        # set cutoff based on whether we are max-ing or min-ing
         # make Y training data in the form of ['good', 'bad', 'bad', ...] # use same culling function?
-        y_train = ['good' if i.fitness > cutoff else 'bad' for i in combined_pop.individuals]
+        if Population.objective_type == Objective.MAXIMIZE:
+            cutoff = max_fitness - (delta * 0.5) # only keep the top 20%
+            y_train = ['good' if i.fitness > cutoff else 'bad' for i in combined_pop.individuals]
+        else:
+            cutoff = min_fitness + (delta * 0.5) # only keep the top 20%
+            y_train = ['good' if i.fitness < cutoff else 'bad' for i in combined_pop.individuals]
 
         self.classifier.fit(x_train, y_train)
 
