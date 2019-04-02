@@ -42,7 +42,9 @@ def run():
         training_data_function = make_training_data,
         tourny_size=2, 
         mutation_rate=0.05,
-        f_eval_max=3500)
+        f_eval_max=3500,
+        classifier_percentage=0.2
+    )
 
     #ga.select = select
     ga.crossover = crossover

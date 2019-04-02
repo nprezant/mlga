@@ -8,11 +8,22 @@ from .evolution import (
     order_independent_crossover, 
     tournament_selection, 
     gene_based_mutation,
-    cull)
+    cull
+)
 
 
 class GeneticAlgorithm:
-    def __init__(self, initial_population, fitness_function, tourny_size=2, mutation_rate=0.05, f_eval_max=4000, fitness_params={}, training_data_function=None, ):
+    def __init__(
+        self, 
+        initial_population, 
+        fitness_function, 
+        tourny_size=2, 
+        mutation_rate=0.05, 
+        f_eval_max=4000, 
+        fitness_params={}, 
+        training_data_function=None, 
+        classifier_percentage=0.4
+    ):
         self.initial_population = initial_population
         self.mutation_rate = mutation_rate
         self.tourny_size = tourny_size
@@ -20,6 +31,7 @@ class GeneticAlgorithm:
         self.training_data_function = training_data_function
         self.fitness_function = fitness_function
         self.fitness_params = fitness_params
+        self.classifier_percentage = classifier_percentage
         self.reset()
 
         self.select = tournament_selection
@@ -168,11 +180,12 @@ class GeneticAlgorithm:
 
         # set cutoff based on whether we are max-ing or min-ing
         # make Y training data in the form of ['good', 'bad', 'bad', ...] # use same culling function?
+        perc = self.classifier_percentage
         if Population.objective_type == Objective.MAXIMIZE:
-            cutoff = max_fitness - (delta * 0.5) # only keep the top 20%
+            cutoff = max_fitness - (delta * perc) # only keep the top xx%
             y_train = ['good' if i.fitness > cutoff else 'bad' for i in combined_pop.individuals]
         else:
-            cutoff = min_fitness + (delta * 0.5) # only keep the top 20%
+            cutoff = min_fitness + (delta * perc) # only keep the top xx%
             y_train = ['good' if i.fitness < cutoff else 'bad' for i in combined_pop.individuals]
 
         self.classifier.fit(x_train, y_train)

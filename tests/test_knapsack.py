@@ -72,6 +72,7 @@ def run():
 
     print('now WITH MACHINE LEARNING')
     ga.training_data_function = training_data
+    ga.classifier_percentage = 0.2
     ga.run_with_ml()
     hist2 = (ga.pop_history.copy(), 'With ML')
     for p in ga.pop_history:
