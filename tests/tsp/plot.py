@@ -47,7 +47,7 @@ def plot_all(ax, pop_histories):
             pt = PlotPoint() # define a point that contains all the necessary plotting data
             pt.parent = pop
             pt.gen = i
-            pt.mean_dist = 1/pop.mean_fitness
+            pt.mean_dist = pop.mean_fitness
             pt.perc90_dist =  pop.get_percentile(0.90).distance - pt.mean_dist
             pt.perc10_dist = -pop.get_percentile(0.10).distance + pt.mean_dist
             if i==0:
@@ -58,7 +58,7 @@ def plot_all(ax, pop_histories):
 
 
             gens.append(i)
-            dist.append(1/pop.mean_fitness)
+            dist.append(pop.mean_fitness)
             if i==0: 
                 evals.append(0)
             else: 
