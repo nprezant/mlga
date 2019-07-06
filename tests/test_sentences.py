@@ -24,7 +24,7 @@ def training_data(sentence):
 def run():
     '''runs a new string pattern matching GA'''
     allowed_vals = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ !,.'
-    target = 'Hello world, I mostly work. And now I am a longer sentence'
+    target = 'Hello world, this is hard.'
     init_pop = initialize_population(500, len(target), allowed_vals)
     ga = GeneticAlgorithm(
         init_pop, 

@@ -7,6 +7,7 @@ Explores the benefit of machine learning classification in evolutionary loop.
 ## Future Work
 
 * ~~Make a standard genetic algorithm library for use with any population~~
+* Comment everything with rst formatting
 
 ## Traveling Salesman Example
 

@@ -43,7 +43,7 @@ def run():
         tourny_size=2, 
         mutation_rate=0.05,
         f_eval_max=3500,
-        classifier_percentage=0.2
+        classifier_percentage=0.25
     )
 
     #ga.select = select
@@ -52,15 +52,11 @@ def run():
 
     ga.run_without_ml()
     hist1 = ga.pop_history.copy()
-    # for i in hist1:
-    #     i.evaluate(compute_fitness)
 
     ga.run_with_ml()
     hist2 = ga.pop_history.copy()
-    # for i in hist2:
-    #     i.evaluate(compute_fitness)
 
-    fitness_plot([(hist1, 'GA'), (hist2, 'GA with ML')])
+    fitness_plot([(hist1, 'GA'), (hist2, 'GA with ML')], 'Travelling Salesman Problem')
     plot_histories([(hist1, 'GA'), (hist2, 'GA with ML')])
 
 

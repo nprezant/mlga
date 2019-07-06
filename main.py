@@ -1,4 +1,4 @@
 
-from tests.tsp.test import run
+from tests.tsp import run
 
 run()

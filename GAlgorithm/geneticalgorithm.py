@@ -54,6 +54,32 @@ class GeneticAlgorithm:
         self.pop_history = []
 
 
+    # def run_random(self):
+    #     '''generates random population with the "initialize" function
+
+    #     culls new populations to ensure the fitness does not move backwards'''
+
+    #     self.reset()
+    #     pop_size = len(self.initial_population.individuals)
+
+    #     new_population = self.initial_population.copy()
+    #     self.pop_history.append(new_population)
+
+    #     while self.f_evals < self.f_eval_max:
+    #         # run objective function and keep count
+    #         objective_calls = new_population.evaluate(self.fitness_function, self.fitness_params)
+    #         self.f_evals += objective_calls
+
+    #         # only keep the best of the old and new population
+    #         population = cull(pop_size, self.pop_history[-1], new_population)
+
+    #         # add population to the history, and update the function evals it took
+    #         population.f_evals = objective_calls
+    #         self.pop_history.append(population)
+
+    #         # evolve population
+    #         new_population = self.evolve(population, self.tourny_size, self.mutation_rate)
+
     def run_without_ml(self):
         '''runs the genetic algorithm without machine learning'''
 
@@ -159,7 +185,7 @@ class GeneticAlgorithm:
             # classify
             good_pop, bad_pop = self.classify(new_population)
             new_population = good_pop
-            #print(f'Classifier chose {len(good_pop.individuals)} children as good')
+            print(f'Classifier chose {len(good_pop.individuals)} children as good')
 
 
     def train_classifier(self, poph):
