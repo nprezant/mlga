@@ -47,9 +47,10 @@ def fitness_plot(population_history:list, title='Fitness Plot'):
         perc10s = [pt.perc10 for pt in points]
         perc90s = [pt.perc90 for pt in points]
 
-        dist_err = ax.errorbar(evals[5::5], vals[5::5], yerr=[perc10s[5::5], perc90s[5::5]], fmt='.', capsize=2)
-        color = dist_err.lines[0].get_color() # Line2D of the line
-        _, = ax.plot(evals, vals, ':', color=color, label=label)
+        # dist_err = ax.errorbar(evals[5::5], vals[5::5], yerr=[perc10s[5::5], perc90s[5::5]], fmt='.', capsize=2)
+        # color = dist_err.lines[0].get_color() # Line2D of the line
+        _, = ax.plot(evals, vals, ':', label=label)
+        ax.fill_between(evals, [v-p for v,p in zip(vals,perc10s)], [v+p for v,p in zip(vals,perc90s)], alpha=0.5)
         ax.set_xlabel('Function Evaluations')
         ax.set_ylabel('Population Fitness')
         #ax.set_xlim(0, max(evals))
