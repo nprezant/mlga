@@ -1,4 +1,4 @@
 
-from tests.tsp import run
+import examples
 
-run()
+examples.run_tsp()
