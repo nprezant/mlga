@@ -8,6 +8,7 @@ Explores the benefit of machine learning classification in evolutionary loop.
 
 * ~~Make a standard genetic algorithm library for use with any population~~
 * Comment everything with rst formatting
+* Track the variables that Dr. Ferguson requested
 
 ## Traveling Salesman Example
 
