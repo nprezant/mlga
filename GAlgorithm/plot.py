@@ -2,6 +2,7 @@
 import matplotlib.pyplot as plt
 
 class PlotPoint:
+    
     def __init__(self):
         self.parent = None # parent history this point belongs to
         self.eval = None
@@ -10,7 +11,6 @@ class PlotPoint:
         self.perc90 = None
         self.perc10 = None
 
-    
     def distance_to(self, other):
         '''Returns the distance from one plot point to another plot point'''
         return ((self.eval - other.eval)**2 + (self.mean - other.mean)**2)**(1/2)

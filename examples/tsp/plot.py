@@ -17,6 +17,7 @@ def plot_histories(pop_histories:list):
 
 
 class PlotPoint:
+
     def __init__(self):
         self.parent = None # parent history this point belongs to
         self.eval = None
@@ -25,11 +26,9 @@ class PlotPoint:
         self.perc90_dist = None
         self.perc10_dist = None
 
-    
     def distance_to(self, other):
         '''Returns the distance from one plot point to another plot point'''
         return ((self.eval - other.eval)**2 + (self.mean_dist - other.mean_dist)**2)**(1/2)
-
 
 
 def plot_all(ax, pop_histories):
@@ -75,7 +74,6 @@ def plot_all(ax, pop_histories):
         #ax.set_xlim(0, max(evals))
     mark, = ax.plot(points[0].eval, points[0].mean_dist, '*', markersize=16, label='Selected Population')
     ax.legend()
-
 
     def histories_clicked(event):
         # when axes is clicked, find the nearest line point, and open a figure for the plot_population with that population

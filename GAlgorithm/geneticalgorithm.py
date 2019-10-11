@@ -13,6 +13,7 @@ from .evolution import (
 
 
 class GeneticAlgorithm:
+
     def __init__(
         self, 
         initial_population, 
@@ -38,7 +39,6 @@ class GeneticAlgorithm:
         self.crossover = order_independent_crossover
         self.mutate = gene_based_mutation
         
-
     def evolve(self, population, tourny_size, mutation_rate):
         '''Evolves the population to the next generation
         Returns: a Population of the new generation'''
@@ -47,12 +47,10 @@ class GeneticAlgorithm:
         children2 = self.mutate(children1, mutation_rate)
         return children2
 
-
     def reset(self):
         '''resets the variables necessary to re-run the genetic algorithm'''
         self.f_evals = 0
         self.pop_history = []
-
 
     # def run_random(self):
     #     '''generates random population with the "initialize" function
@@ -104,7 +102,6 @@ class GeneticAlgorithm:
             # evolve population
             new_population = self.evolve(population, self.tourny_size, self.mutation_rate)
 
-
     def test_convergance(self):
         '''Checks some convergance criteria'''
 
@@ -122,7 +119,6 @@ class GeneticAlgorithm:
             low_dev = False
 
         return improved, low_dev
-
 
     def run_with_ml(self):
         '''runs the genetic algorithm with machine learning'''
@@ -187,7 +183,6 @@ class GeneticAlgorithm:
             new_population = good_pop
             print(f'Classifier chose {len(good_pop.individuals)} children as good')
 
-
     def train_classifier(self, poph):
         '''Updates the classifier a list of all the prior populations given'''
 
@@ -216,7 +211,6 @@ class GeneticAlgorithm:
 
         self.classifier.fit(x_train, y_train)
 
-
     def classify(self, pop):
         '''Predicts whether individivuals in the population will
         be good or bad, then returns them'''
@@ -227,7 +221,6 @@ class GeneticAlgorithm:
         good_pop = Population(good_indivs)
         bad_pop = Population(bad_indivs)
         return good_pop, bad_pop
-
 
     def serialize(self):
         d = dict(__GeneticAlgorithm__=True)

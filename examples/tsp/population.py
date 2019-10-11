@@ -16,12 +16,10 @@ class Route(Individual):
         self._genes = random.sample(self._genes, len(self._genes))
         return self
 
-
     @property
     def x(self):
         '''returns x as a list of city data x coordinates'''
         return [city.x for city in self.genes] + [self.genes[0].x]
-
 
     @property
     def y(self):
@@ -41,11 +39,9 @@ class City:
         self.x = x
         self.y = y
 
-
     def distance_to(self, other):
         '''Distance to another city'''
         return ((self.x-other.x)**2 + (self.y-other.y)**2)**(1/2)
-
 
     def randomize(self, xmin, xmax, ymin, ymax):
         '''Randomizes the city's location'''
@@ -53,11 +49,9 @@ class City:
         self.y = random.randint(ymin, ymax)
         return self
 
-
     def serialize(self):
         '''Export self as json file'''
         return {'x': self.x, 'y': self.y}
-    
 
     def __str__(self):
         return f'City ({self.x}, {self.y})'

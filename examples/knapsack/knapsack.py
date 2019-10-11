@@ -7,6 +7,7 @@ from GAlgorithm import (
     initialize_population,
     fitness_plot)
 
+
 def sum_knapsack(knapsack, items):
     '''Finds the total value and weight of a knapsack'''
     total_value = 0
@@ -39,10 +40,10 @@ def training_data(knapsack):
 
 
 class Item:
+
     def __init__(self, value, weight):
         self.value = value
         self.weight = weight
-
     
     def __str__(self):
         return f'value: {self.value}, weight: {self.weight}'
@@ -80,6 +81,7 @@ def run():
         print('Knapsack: value={}, weight={}'.format(value, weight))
 
     fitness_plot([hist1, hist2], 'Knapsack Fitness Plot')
+
 
 if __name__ == "__main__":
     run()
