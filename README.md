@@ -1,20 +1,21 @@
-# Traveling Salesman
+# Genetic Algorithm
 
-A genetic algorithm solution to the traveling salesman problem
+A genetic algorithm solution.
 
 Explores the benefit of machine learning classification in evolutionary loop.
 
 ## Future Work
 
-* Make a standard genetic algorithm library for use with any population
+* Track variables that Dr. Ferguson requested
 
-## Example
+## Traveling Salesman Example
 
-Top 10 routes with machine learning at 1000 objective function evaluations
-![Example Image with Machine Learning](assets/ga_with_ml.png)
+Minimization problem
 
-Top 10 routes without machine learning at 1000 objective function evaluations
-![Example Image without Machine Learning](assets/ga_without_ml.png)
+![Travelling Salesman](assets/travelling_salesman.png)
+
+You can compare the top 10 salesman routes with and without machine learning (at 1000 objective function evaluations). The machine learning routes are notably consistent and better (shorter).
+![Routes Comparison](assets/routes_comparison.png)
 
 
 
