@@ -78,7 +78,7 @@ class GeneticAlgorithm:
     #         # evolve population
     #         new_population = self.evolve(population, self.tourny_size, self.mutation_rate)
 
-    def run_without_ml(self):
+    def run(self):
         '''runs the genetic algorithm without machine learning'''
 
         self.reset()

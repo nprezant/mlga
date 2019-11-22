@@ -50,7 +50,7 @@ def run():
     ga.crossover = crossover
     ga.mutate = mutate
 
-    ga.run_without_ml()
+    ga.run()
     hist1 = ga.pop_history.copy()
 
     ga.run_with_ml()
