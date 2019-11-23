@@ -5,3 +5,6 @@ __pycache__
 *.pyproj
 *.sln
 *.pptx
+*.xlsx
+
+tracked_variables.txt
