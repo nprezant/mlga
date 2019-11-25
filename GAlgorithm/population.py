@@ -4,6 +4,9 @@ import operator
 from math import ceil
 from statistics import pstdev
 from enum import Enum
+from collections import UserList
+
+from .plot import PlotPoints
 
 class Objective(Enum):
     MAXIMIZE = 1
@@ -214,6 +217,21 @@ class Population:
 
     def __repr__(self):
         return f'Pop; routes: {len(self.individuals)}; cities: {len(self.individuals[0])}'
+
+    def __len__(self):
+        return len(self.individuals)
+
+
+class PopulationHistory(UserList):
+    
+    def to_csv(self, fp):
+        points = PlotPoints()
+        points.create_from_ga_history(self.data)
+
+        with open(fp, 'w') as f:
+            f.write(points.csv_headers())
+
+        points.write_csv(fp, 'a')
 
 
 def initialize_population(pop_size, indiv_size, allowed_params, Individual=Individual, default_val=None, Gene=Gene):

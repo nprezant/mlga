@@ -2,6 +2,8 @@ __pycache__
 .vs
 .vscode
 
+data
+
 *.pyproj
 *.sln
 *.pptx

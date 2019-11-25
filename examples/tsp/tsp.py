@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import json
+from pathlib import Path
 
 from GAlgorithm import (
     GeneticAlgorithm,
@@ -20,6 +21,7 @@ from .evolution import (
     
 from .plot import plot_histories
 
+DEFAULT_SAVE_DIRECTORY = 'data'
 
 def decode_route(dct):
     '''reads in the starter cities from a saved file'''
@@ -28,27 +30,29 @@ def decode_route(dct):
         cities.append(City(city['x'], city['y']))
     return cities
 
-
-def run():
-    '''runs a new genetic algorithm'''
-    #cities = [City().randomize(0,200,0,200) for i in range(10)]
-    with open('cities\\starter_cities10.txt') as f: cities_dict = json.load(f)
+def read_cities(fp):
+    with open(fp) as f:
+        cities_dict = json.load(f)
     cities = decode_route(cities_dict)
-    init_pop = random_population(cities,100)
+    return random_population(cities,100)
 
-    ga = GeneticAlgorithm(
-        initial_population=init_pop,
-        fitness_function=compute_fitness,
-        training_data_function = make_training_data,
-        tourny_size=2, 
-        mutation_rate=0.05,
-        f_eval_max=3500,
-        classifier_percentage=0.25
-    )
+GA_ARGS = {
+    'initial_population': read_cities('cities\\starter_cities10.txt'),
+    'fitness_function': compute_fitness,
+    'training_data_function' :  make_training_data,
+    'tourny_size': 2, 
+    'mutation_rate': 0.05,
+    'f_eval_max': 500,
+    'classifier_percentage': 0.25,
+    'crossover_fn': crossover,
+    'mutate_fn': mutate
+}
 
-    #ga.select = select
-    ga.crossover = crossover
-    ga.mutate = mutate
+def run_comparison():
+    '''runs a new genetic algorithm n number of times'''
+    #cities = [City().randomize(0,200,0,200) for i in range(10)]
+
+    ga = GeneticAlgorithm(**GA_ARGS)
 
     ga.run()
     hist1 = ga.pop_history.copy()
@@ -59,6 +63,37 @@ def run():
     fitness_plot([(hist1, 'GA'), (hist2, 'GA with ML')], 'Travelling Salesman Problem')
     plot_histories([(hist1, 'GA'), (hist2, 'GA with ML')])
 
+def run_standard(num_iterations=1, save_directory=DEFAULT_SAVE_DIRECTORY):
+   
+    ga = GeneticAlgorithm(**GA_ARGS)
+    
+    Path(save_directory).mkdir(parents=True, exist_ok=True)
+
+    for n in range(num_iterations):
+
+        fp = Path(save_directory) / Path(f'StandardRun{n}.txt')
+        fp.touch()
+
+        ga.run()
+        ga.pop_history.to_csv(fp)
+
+def run_ml_mod(num_iterations=1, save_directory=DEFAULT_SAVE_DIRECTORY):
+    
+    ga = GeneticAlgorithm(**GA_ARGS)
+
+    Path(save_directory).mkdir(parents=True, exist_ok=True)
+    
+    for n in range(num_iterations):
+
+        plot_fp = Path(save_directory) / Path(f'MLRun{n}.txt')
+        plot_fp.touch()
+
+        classifier_vars_fp = Path(save_directory) / Path(f'MLRun{n}_ClassiferVars.txt')
+        classifier_vars_fp.touch()
+
+        ga.classifer_vars_fp = classifier_vars_fp
+        ga.run_with_ml()
+        ga.pop_history.to_csv(plot_fp)
 
 def make_cities(numcities:int):
     cities = [City().randomize(0,200,0,200) for i in range(numcities)]
@@ -68,6 +103,5 @@ def make_cities(numcities:int):
 
 if __name__ == '__main__':
 
-    run()
+    run_comparison()
     #make_cities(30)
-    

@@ -1,4 +1,6 @@
 
+from collections import UserList
+
 import matplotlib.pyplot as plt
 
 class PlotPoint:
@@ -16,6 +18,39 @@ class PlotPoint:
         return ((self.eval - other.eval)**2 + (self.mean - other.mean)**2)**(1/2)
 
 
+class PlotPoints(UserList):
+    
+    def create_from_ga_history(self, hist):
+        self.data:PlotPoint = []
+
+        for i,pop in enumerate(hist):
+            pt = PlotPoint() # define a point that contains all the necessary plotting data
+            pt.parent = pop
+            pt.gen = i
+            pt.value = pop.mean_fitness
+            pt.perc90 =  pop.get_percentile(0.90).fitness - pt.value
+            pt.perc10 = -pop.get_percentile(0.10).fitness + pt.value
+            if i==0:
+                pt.eval = 0
+            else:
+                pt.eval = self.data[-1].eval + pop.f_evals
+            self.data.append(pt)
+
+    def csv_headers(self) -> str:
+        return (
+            'Function Evaluations\tGeneration\tMean Fitness\t'
+            '90th Percentile\t10th Percentile\r'
+        )
+
+    def write_csv(self, fp, mode='w'):
+        with open(fp, mode) as f:
+            for pt in self.data:
+                f.write(
+                    f'{pt.eval}\t{pt.gen}\t{pt.value}\t'
+                    f'{pt.perc90}\t{pt.perc10}\r'
+                )
+
+
 def fitness_plot(population_history:list, title='Fitness Plot'):
     '''Plots the fitness vs function evaluation count.
     Plots for each population in the `population_history` list'''
@@ -27,34 +62,19 @@ def fitness_plot(population_history:list, title='Fitness Plot'):
 
     for hist,label in population_history:
 
-        points: PlotPoint = []
-        
-        for i,pop in enumerate(hist):
-            pt = PlotPoint() # define a point that contains all the necessary plotting data
-            pt.parent = pop
-            pt.gen = i
-            pt.value = pop.mean_fitness
-            pt.perc90 =  pop.get_percentile(0.90).fitness - pt.value
-            pt.perc10 = -pop.get_percentile(0.10).fitness + pt.value
-            if i==0:
-                pt.eval = 0
-            else:
-                pt.eval = points[-1].eval + pop.f_evals
-            points.append(pt)
+        points = PlotPoints()
+        points.create_from_ga_history(hist)
 
         evals = [pt.eval for pt in points]
         vals = [pt.value for pt in points]
         perc10s = [pt.perc10 for pt in points]
         perc90s = [pt.perc90 for pt in points]
 
-        # dist_err = ax.errorbar(evals[5::5], vals[5::5], yerr=[perc10s[5::5], perc90s[5::5]], fmt='.', capsize=2)
-        # color = dist_err.lines[0].get_color() # Line2D of the line
         _, = ax.plot(evals, vals, ':', label=label)
         ax.fill_between(evals, [v-p for v,p in zip(vals,perc10s)], [v+p for v,p in zip(vals,perc90s)], alpha=0.5)
         ax.set_xlabel('Function Evaluations')
         ax.set_ylabel('Population Fitness')
-        #ax.set_xlim(0, max(evals))
-    #mark, = ax.plot(points[0].eval, points[0].value, '*', markersize=16, label='Selected Population')
+
     ax.legend()
 
     plt.show()
