@@ -2,7 +2,7 @@
 
 A genetic algorithm solution.
 
-Explores the benefit of machine learning classification in evolutionary loop.
+Explores the benefit of machine learning classification in the evolutionary loop.
 
 ## Future Work
 
