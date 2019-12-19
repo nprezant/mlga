@@ -11,3 +11,5 @@ from .geneticalgorithm import GeneticAlgorithm
 from .saver import dump
 
 from .plot import fitness_plot
+
+from .postprocessing import plot_many_objective_files

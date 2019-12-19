@@ -1,0 +1,52 @@
+name: galg
+channels:
+  - defaults
+dependencies:
+  - astroid=2.1.0=py37_0
+  - blas=1.0=mkl
+  - ca-certificates=2019.10.16=0
+  - certifi=2019.9.11=py37_0
+  - colorama=0.4.1=py37_0
+  - cycler=0.10.0=py37_0
+  - freetype=2.9.1=ha9979f8_1
+  - icc_rt=2019.0.0=h0cc432a_1
+  - icu=58.2=ha66f8fd_1
+  - intel-openmp=2019.1=144
+  - isort=4.3.4=py37_0
+  - jpeg=9b=hb83a4c4_2
+  - kiwisolver=1.0.1=py37h6538335_0
+  - lazy-object-proxy=1.3.1=py37hfa6e2cd_2
+  - libpng=1.6.36=h2a8f88b_0
+  - matplotlib=3.0.2=py37hc8f65d3_0
+  - mccabe=0.6.1=py37_1
+  - mkl=2019.1=144
+  - mkl_fft=1.0.10=py37h14836fe_0
+  - mkl_random=1.0.2=py37h343c172_0
+  - numpy=1.15.4=py37h19fb1c0_0
+  - numpy-base=1.15.4=py37hc3f5095_0
+  - openssl=1.1.1c=he774522_1
+  - pandas=0.25.1=py37ha925a31_0
+  - pip=19.0.1=py37_0
+  - pylint=2.2.2=py37_0
+  - pyparsing=2.3.1=py37_0
+  - pyqt=5.9.2=py37h6538335_2
+  - python=3.7.2=h8c8aaf0_2
+  - python-dateutil=2.7.5=py37_0
+  - pytz=2018.9=py37_0
+  - qt=5.9.7=vc14h73c81de_0
+  - rope=0.14.0=py_0
+  - scikit-learn=0.20.2=py37h343c172_0
+  - scipy=1.2.0=py37h29ff71c_0
+  - setuptools=40.7.3=py37_0
+  - sip=4.19.8=py37h6538335_0
+  - six=1.12.0=py37_0
+  - sqlite=3.26.0=he774522_0
+  - tornado=5.1.1=py37hfa6e2cd_0
+  - vc=14.1=h0510ff6_4
+  - vs2015_runtime=14.15.26706=h3a45250_0
+  - wheel=0.32.3=py37_0
+  - wincertstore=0.2=py37_0
+  - wrapt=1.11.1=py37he774522_0
+  - zlib=1.2.11=h62dcd97_3
+prefix: C:\Users\Noah\Miniconda3\envs\galg
+

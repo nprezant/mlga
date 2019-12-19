@@ -204,7 +204,7 @@ class Population:
     def get_percentile(self, k):
         '''returns the kth percentile individual'''
         index = ceil(k * len(self.individuals))
-        return [r for i,r in enumerate(self.individuals) if i == index][0] # SHOULD THIS BE SELF.RANKED()??
+        return [r for i,r in enumerate(self.ranked) if i == index][0] # TODO SHOULD THIS BE SELF.RANKED()??
 
     def get_standard_deviation(self):
         '''Returns the standard deviation of the population's fitness'''
