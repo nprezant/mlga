@@ -77,6 +77,10 @@ class Individual:
         '''Makes X training data for the classifier'''
         assert False, 'You must implement the "make_training_data" method to use the classifier'
 
+    def randomize(self):
+        '''Randomizes the genes in this individual'''
+        assert False, 'You must implement the "randomize" method'
+
     def copy(self):
         '''Copies this individual based on whatever it is subclassed into'''
         return type(self)(self.genes.copy())

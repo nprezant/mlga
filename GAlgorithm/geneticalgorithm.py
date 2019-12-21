@@ -73,31 +73,34 @@ class GeneticAlgorithm:
             'BadPredictorPercentage': [],
         }
 
-    # def run_random(self):
-    #     '''generates random population with the "initialize" function
+    def run_random(self):
+        '''generates random population with the "initialize" function
 
-    #     culls new populations to ensure the fitness does not move backwards'''
+        culls new populations to ensure the fitness does not move backwards
+        '''
 
-    #     self.reset()
-    #     pop_size = len(self.initial_population.individuals)
+        self.reset()
+        pop_size = len(self.initial_population.individuals)
 
-    #     new_population = self.initial_population.copy()
-    #     self.pop_history.append(new_population)
+        new_population = self.initial_population.copy()
+        self.pop_history.append(new_population)
 
-    #     while self.f_evals < self.f_eval_max:
-    #         # run objective function and keep count
-    #         objective_calls = new_population.evaluate(self.fitness_function, self.fitness_params)
-    #         self.f_evals += objective_calls
+        while self.f_evals < self.f_eval_max:
+            # run objective function and keep count
+            objective_calls = new_population.evaluate(self.fitness_function, self.fitness_params)
+            self.f_evals += objective_calls
 
-    #         # only keep the best of the old and new population
-    #         population = cull(pop_size, self.pop_history[-1], new_population)
+            # only keep the best of the old and new population
+            population = cull(pop_size, self.pop_history[-1], new_population)
 
-    #         # add population to the history, and update the function evals it took
-    #         population.f_evals = objective_calls
-    #         self.pop_history.append(population)
+            # add population to the history, and update the function evals it took
+            population.f_evals = objective_calls
+            self.pop_history.append(population)
 
-    #         # evolve population
-    #         new_population = self.evolve(population, self.tourny_size, self.mutation_rate)
+            # create new population
+            new_population = population.copy()
+            for p in new_population.individuals:
+                p.randomize()
 
     def run(self):
         '''runs the genetic algorithm without machine learning'''

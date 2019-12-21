@@ -42,7 +42,7 @@ GA_ARGS = {
     'training_data_function' :  make_training_data,
     'tourny_size': 2, 
     'mutation_rate': 0.05,
-    'f_eval_max': 500,
+    'f_eval_max': 3500,
     'classifier_percentage': 0.25,
     'crossover_fn': crossover,
     'mutate_fn': mutate
@@ -88,16 +88,34 @@ def run_ml_mod(num_iterations=1, save_directory=DEFAULT_SAVE_DIRECTORY):
         plot_fp = Path(save_directory) / Path(f'MLRun{n}.txt')
         plot_fp.touch()
 
-        classifier_vars_fp = Path(save_directory) / Path(f'MLRun{n}_ClassiferVars.txt')
+        classifier_vars_fp = Path(save_directory) / Path(f'MLRunClassiferVars{n}.txt')
         classifier_vars_fp.touch()
 
         ga.classifer_vars_fp = classifier_vars_fp
         ga.run_with_ml()
         ga.pop_history.to_csv(plot_fp)
 
-def make_cities(numcities:int):
+def run_random(num_iterations=1, save_directory=DEFAULT_SAVE_DIRECTORY):
+    
+    ga = GeneticAlgorithm(**GA_ARGS)
+
+    Path(save_directory).mkdir(parents=True, exist_ok=True)
+    
+    for n in range(num_iterations):
+
+        plot_fp = Path(save_directory) / Path(f'RandomRun{n}.txt')
+        plot_fp.touch()
+
+        ga.run_random()
+        ga.pop_history.to_csv(plot_fp)
+
+def make_cities(numcities: int):
     cities = [City().randomize(0,200,0,200) for i in range(numcities)]
     route = Route(cities)
+    return route
+
+def write_cities(numcities: int):
+    route = make_cities(numcities)
     dump(route, f'cities\\newcity{numcities}.txt')
 
 

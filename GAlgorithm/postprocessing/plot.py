@@ -12,10 +12,10 @@ def plot_many_objective_files(folder, run_file_patterns, mean=True):
 
     folder = Path(folder)
 
-    for pattern in run_file_patterns:
-        if mean == True:
-            plot_objective_files_mean(folder, pattern)
-        else:
+    if mean == True:
+        plot_objective_files_mean(folder, run_file_patterns)
+    else:
+        for pattern in run_file_patterns:
             plot_objective_files(folder, pattern)
 
 
@@ -50,7 +50,7 @@ def plot_objective_files_interpolations(folder, pattern):
 
     fitness_plot_from_points(points_list, pattern)
 
-def plot_objective_files_mean(folder, pattern):
+def objective_files_mean_points(folder, pattern):
 
     mean_points = PlotPoints()
 
@@ -66,7 +66,23 @@ def plot_objective_files_mean(folder, pattern):
         # add these points to the mean
         mean_points.add_to_mean(points)
 
+    return mean_points
+
+
+def plot_objective_file_mean(folder, pattern):
+
+    mean_points = objective_files_mean_points(folder, pattern)
+
     fitness_plot_from_points([(mean_points, 'Means')], pattern)
 
+def plot_objective_files_mean(folder, patterns):
+
+    points_list = []
+
+    for pattern in patterns:
+        mean_points = objective_files_mean_points(folder, pattern)
+        points_list.append((mean_points, f'Mean of {pattern}'))
+
+    fitness_plot_from_points(points_list, 'GA Comparison')
 
 # TODO 2) import and plot ML classifier variables
