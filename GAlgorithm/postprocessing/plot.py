@@ -1,6 +1,5 @@
 
 from pathlib import Path
-from collections import UserList
 
 from ..plot import PlotPoints, fitness_plot_from_points
 
