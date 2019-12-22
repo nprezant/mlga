@@ -7,7 +7,6 @@ import numpy as np
 from ..plot import PlotPoints, fitness_plot_from_points
 
 
-# TODO 1) import and plot run data
 def plot_many_objective_files(folder, run_file_patterns, mean=True):
 
     folder = Path(folder)
@@ -50,6 +49,7 @@ def plot_objective_files_interpolations(folder, pattern):
 
     fitness_plot_from_points(points_list, pattern)
 
+
 def objective_files_mean_points(folder, pattern):
 
     mean_points = PlotPoints()
@@ -75,6 +75,7 @@ def plot_objective_file_mean(folder, pattern):
 
     fitness_plot_from_points([(mean_points, 'Means')], pattern)
 
+
 def plot_objective_files_mean(folder, patterns):
 
     points_list = []
@@ -84,5 +85,6 @@ def plot_objective_files_mean(folder, patterns):
         points_list.append((mean_points, f'Mean of {pattern}'))
 
     fitness_plot_from_points(points_list, 'GA Comparison')
+
 
 # TODO 2) import and plot ML classifier variables
