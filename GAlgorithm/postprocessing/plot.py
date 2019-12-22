@@ -2,8 +2,6 @@
 from pathlib import Path
 from collections import UserList
 
-import numpy as np
-
 from ..plot import PlotPoints, fitness_plot_from_points
 
 
