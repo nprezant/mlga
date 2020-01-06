@@ -237,4 +237,17 @@ class PopulationHistory(UserList):
 
         points.write_csv(fp, 'a')
 
-        # look I'm making changes
+
+def initialize_population(pop_size, indiv_size, allowed_params, Individual=Individual, default_val=None, Gene=Gene):
+    '''Initialize the population'''
+    individuals = []
+    for _ in range(pop_size):
+        genes = [Gene(allowed_params) for _ in range(indiv_size)]
+        for gene in genes:
+            if default_val is not None:
+                gene.value = default_val
+            else:
+                gene.mutate()
+        individuals.append(Individual(genes))
+    pop = Population(individuals)
+    return pop
