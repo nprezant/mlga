@@ -241,15 +241,18 @@ class GeneticAlgorithm:
 
             if Population.objective_type == Objective.MAXIMIZE:
                 cutoff = max_fitness - (delta * perc)
-                classified_good_actually_good = [i for i in classified_good_pop.individuals if i.fitness > cutoff]
-                classified_good_actually_bad = [i for i in classified_good_pop.individuals if i.fitness < cutoff]
+                classified_good_actually_good_pop = [i for i in classified_good_pop.individuals if i.fitness > cutoff]
+                classified_good_actually_bad_pop = [i for i in classified_good_pop.individuals if i.fitness < cutoff]
             else:
                 cutoff = min_fitness + (delta * perc)
-                classified_good_actually_good = [i for i in classified_good_pop.individuals if i.fitness < cutoff]
-                classified_good_actually_bad = [i for i in classified_good_pop.individuals if i.fitness > cutoff]
+                classified_good_actually_good_pop = [i for i in classified_good_pop.individuals if i.fitness < cutoff]
+                classified_good_actually_bad_pop = [i for i in classified_good_pop.individuals if i.fitness > cutoff]
 
-        self.classifer_var_tracker['ClassifiedGoodActuallyGood'].append(len(classified_good_actually_good))
-        self.classifer_var_tracker['ClassifiedGoodActuallyBad'].append(len(classified_good_actually_bad))
+            classified_good_actually_good = len(classified_good_actually_good_pop)
+            classified_good_actually_bad = len(classified_good_actually_bad_pop)
+
+        self.classifer_var_tracker['ClassifiedGoodActuallyGood'].append(classified_good_actually_good)
+        self.classifer_var_tracker['ClassifiedGoodActuallyBad'].append(classified_good_actually_bad)
 
         # determine performance of classifying "bad"
         if len(classified_bad_pop) == 0:
@@ -264,29 +267,32 @@ class GeneticAlgorithm:
 
             if Population.objective_type == Objective.MAXIMIZE:
                 cutoff = max_fitness - (delta * perc)
-                classified_bad_actually_good = [i for i in classified_bad_pop.individuals if i.fitness > cutoff]
-                classified_bad_actually_bad = [i for i in classified_bad_pop.individuals if i.fitness < cutoff]
+                classified_bad_actually_good_pop = [i for i in classified_bad_pop.individuals if i.fitness > cutoff]
+                classified_bad_actually_bad_pop = [i for i in classified_bad_pop.individuals if i.fitness < cutoff]
             else:
                 cutoff = min_fitness + (delta * perc)
-                classified_bad_actually_good = [i for i in classified_bad_pop.individuals if i.fitness < cutoff]
-                classified_bad_actually_bad = [i for i in classified_bad_pop.individuals if i.fitness > cutoff]
+                classified_bad_actually_good_pop = [i for i in classified_bad_pop.individuals if i.fitness < cutoff]
+                classified_bad_actually_bad_pop = [i for i in classified_bad_pop.individuals if i.fitness > cutoff]
+
+            classified_bad_actually_good = len(classified_bad_actually_good_pop)
+            classified_bad_actually_bad = len(classified_bad_actually_bad_pop)
         
-        self.classifer_var_tracker['ClassifiedBadActuallyBad'].append(len(classified_bad_actually_bad))
-        self.classifer_var_tracker['ClassifiedBadActuallyGood'].append(len(classified_bad_actually_good))
+        self.classifer_var_tracker['ClassifiedBadActuallyBad'].append(classified_bad_actually_bad)
+        self.classifer_var_tracker['ClassifiedBadActuallyGood'].append(classified_bad_actually_good)
 
         # how accurate is the classifier?
         try:
-            self.classifer_var_tracker['GoodPredictorPercentage'].append(len(classified_good_actually_good) / len(classified_good_pop))
+            self.classifer_var_tracker['GoodPredictorPercentage'].append(classified_good_actually_good / len(classified_good_pop))
         except ZeroDivisionError:
-            if len(classified_bad_actually_good) == 0:
+            if classified_bad_actually_good == 0:
                 self.classifer_var_tracker['GoodPredictorPercentage'].append(1)
             else:
                 self.classifer_var_tracker['GoodPredictorPercentage'].append(0)
 
         try:
-            self.classifer_var_tracker['BadPredictorPercentage'].append(len(classified_bad_actually_bad) / len(classified_bad_pop))
+            self.classifer_var_tracker['BadPredictorPercentage'].append(classified_bad_actually_bad / len(classified_bad_pop))
         except ZeroDivisionError:
-            if len(classified_good_actually_bad) == 0:
+            if classified_good_actually_bad == 0:
                 self.classifer_var_tracker['BadPredictorPercentage'].append(1)
             else:
                 self.classifer_var_tracker['BadPredictorPercentage'].append(0)
