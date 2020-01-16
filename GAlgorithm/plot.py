@@ -74,8 +74,8 @@ class PlotPoints(UserList):
             pt.parent = pop
             pt.gen = i
             pt.value = pop.mean_fitness
-            pt.perc90 =  pop.get_percentile(0.90).fitness - pt.value
-            pt.perc10 = -pop.get_percentile(0.10).fitness + pt.value
+            pt.perc90 =  pop.get_percentile(0.90).fitness
+            pt.perc10 = pop.get_percentile(0.10).fitness
             if i==0:
                 pt.eval = 0
             else:
@@ -188,7 +188,7 @@ def fitness_plot(population_history:list, title='Fitness Plot'):
 def fitness_plot_from_points(points_list, title):
     '''points_list given as [(Points(), 'Plot 1'), (Points(), 'Plot 2')]'''
 
-    plt.style.use('seaborn-whitegrid')
+    # plt.style.use('seaborn-whitegrid')
     fig, ax = plt.subplots()
     fig.canvas.set_window_title(title)
     ax.set_title(title)
