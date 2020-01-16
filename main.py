@@ -1,16 +1,19 @@
 
 import examples
 
-# examples.run_tsp_comparison()
-# examples.run_tsp_standard(100)
-# examples.run_tsp_ml_mod(100)
-# examples.run_tsp_random(100)
-
 from pathlib import Path
-from GAlgorithm import plot_many_objective_files, plot_classifier_run_data
+from GAlgorithm import plot_classifier_run_data, plot_fitness_data
 
-data_path = Path().cwd() / 'data'
-file_patterns = ['StandardRun*', 'MLRun*', 'RandomRun*']
+n = 250
+folder_name = f'data{n}'
+data_path = Path().cwd() / folder_name
+file_patterns = ['RandomRun*', 'StandardRun*', 'MLRun*']
 
-# plot_many_objective_files(data_path, file_patterns)
-plot_classifier_run_data(data_path, 'MLClassifierVarsRun*')
+# generate GA run data
+examples.run_tsp_random(n, folder_name)
+examples.run_tsp_standard(n, folder_name)
+examples.run_tsp_ml_mod(n, folder_name)
+
+# plot GA data
+# plot_fitness_data(data_path, file_patterns)
+# plot_classifier_run_data(data_path, 'MLClassifierVarsRun*')
