@@ -223,40 +223,53 @@ class GeneticAlgorithm:
         self.classifer_var_tracker['ClassifiedGood'].append(len(classified_good_pop))
         self.classifer_var_tracker['ClassifiedBad'].append(len(classified_bad_pop))
         
-        # determine whether the classified as good were actually good
+        # evaluate all of the populations
         classified_good_pop.evaluate(self.fitness_function, self.fitness_params)
         classified_bad_pop.evaluate(self.fitness_function, self.fitness_params)
         total_pop.evaluate(self.fitness_function, self.fitness_params)
 
+        # determine performance of classifying "good"
         if len(classified_good_pop) == 0:
-            min_fitness = 0
-            max_fitness = 0
+            classified_good_actually_good = 0
+            classified_good_actually_bad = 0
         else:
             min_fitness = total_pop.min_fitness
             max_fitness = total_pop.max_fitness
 
-        delta = max_fitness - min_fitness
-        perc = self.classifier_percentage
+            delta = max_fitness - min_fitness
+            perc = self.classifier_percentage
 
-        if Population.objective_type == Objective.MAXIMIZE:
-            cutoff = max_fitness - (delta * perc)
-
-            classified_good_actually_good = [i for i in classified_good_pop.individuals if i.fitness > cutoff]
-            classified_good_actually_bad = [i for i in classified_good_pop.individuals if i.fitness < cutoff]
-
-            classified_bad_actually_good = [i for i in classified_bad_pop.individuals if i.fitness > cutoff]
-            classified_bad_actually_bad = [i for i in classified_bad_pop.individuals if i.fitness < cutoff]
-        else:
-            cutoff = min_fitness + (delta * perc)
-
-            classified_good_actually_good = [i for i in classified_good_pop.individuals if i.fitness < cutoff]
-            classified_good_actually_bad = [i for i in classified_good_pop.individuals if i.fitness > cutoff]
-
-            classified_bad_actually_good = [i for i in classified_bad_pop.individuals if i.fitness < cutoff]
-            classified_bad_actually_bad = [i for i in classified_bad_pop.individuals if i.fitness > cutoff]
+            if Population.objective_type == Objective.MAXIMIZE:
+                cutoff = max_fitness - (delta * perc)
+                classified_good_actually_good = [i for i in classified_good_pop.individuals if i.fitness > cutoff]
+                classified_good_actually_bad = [i for i in classified_good_pop.individuals if i.fitness < cutoff]
+            else:
+                cutoff = min_fitness + (delta * perc)
+                classified_good_actually_good = [i for i in classified_good_pop.individuals if i.fitness < cutoff]
+                classified_good_actually_bad = [i for i in classified_good_pop.individuals if i.fitness > cutoff]
 
         self.classifer_var_tracker['ClassifiedGoodActuallyGood'].append(len(classified_good_actually_good))
         self.classifer_var_tracker['ClassifiedGoodActuallyBad'].append(len(classified_good_actually_bad))
+
+        # determine performance of classifying "bad"
+        if len(classified_bad_pop) == 0:
+            classified_bad_actually_good = 0
+            classified_bad_actually_bad = 0
+        else:
+            min_fitness = total_pop.min_fitness
+            max_fitness = total_pop.max_fitness
+
+            delta = max_fitness - min_fitness
+            perc = self.classifier_percentage
+
+            if Population.objective_type == Objective.MAXIMIZE:
+                cutoff = max_fitness - (delta * perc)
+                classified_bad_actually_good = [i for i in classified_bad_pop.individuals if i.fitness > cutoff]
+                classified_bad_actually_bad = [i for i in classified_bad_pop.individuals if i.fitness < cutoff]
+            else:
+                cutoff = min_fitness + (delta * perc)
+                classified_bad_actually_good = [i for i in classified_bad_pop.individuals if i.fitness < cutoff]
+                classified_bad_actually_bad = [i for i in classified_bad_pop.individuals if i.fitness > cutoff]
         
         self.classifer_var_tracker['ClassifiedBadActuallyBad'].append(len(classified_bad_actually_bad))
         self.classifer_var_tracker['ClassifiedBadActuallyGood'].append(len(classified_bad_actually_good))
