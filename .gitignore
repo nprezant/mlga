@@ -8,5 +8,6 @@ data*
 *.sln
 *.pptx
 *.xlsx
+*.docx
 
 tracked_variables.txt
