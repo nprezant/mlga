@@ -207,9 +207,10 @@ class GeneticAlgorithm:
             good_pop, bad_pop = self.classify(new_population)
 
             # progress update
-            print(
-                f'Fn evals: {self.f_evals}/{self.f_eval_max} '
-                f'Classified {len(good_pop)} children as good.')
+            # print(
+            #     f'Fn evals: {self.f_evals}/{self.f_eval_max} '
+            #     f'Classified {len(good_pop)} children as good.'
+            # )
 
             self.record_tracker_data(good_pop.copy(), bad_pop.copy(), new_population.copy())
             new_population = good_pop
