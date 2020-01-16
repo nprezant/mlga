@@ -63,6 +63,7 @@ class GeneticAlgorithm:
         self.f_evals = 0
         self.pop_history = PopulationHistory()
         self.classifer_var_tracker = {
+            'FunctionEvaluation': [],
             'ClassifiedGood': [],
             'ClassifiedBad': [],
             'ClassifiedGoodActuallyGood': [],
@@ -204,7 +205,6 @@ class GeneticAlgorithm:
 
             # classify
             good_pop, bad_pop = self.classify(new_population)
-            new_population = good_pop
 
             # progress update
             print(
@@ -212,12 +212,14 @@ class GeneticAlgorithm:
                 f'Classified {len(good_pop)} children as good.')
 
             self.record_tracker_data(good_pop.copy(), bad_pop.copy(), new_population.copy())
+            new_population = good_pop
 
         self.save_tracked_variables(self.classifer_vars_fp)
 
     def record_tracker_data(self, classified_good_pop, classified_bad_pop, total_pop):
 
         # record data
+        self.classifer_var_tracker['FunctionEvaluation'].append(self.f_evals)
         self.classifer_var_tracker['ClassifiedGood'].append(len(classified_good_pop))
         self.classifer_var_tracker['ClassifiedBad'].append(len(classified_bad_pop))
         
