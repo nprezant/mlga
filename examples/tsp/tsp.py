@@ -88,7 +88,7 @@ def run_ml_mod(num_iterations=1, save_directory=DEFAULT_SAVE_DIRECTORY):
         plot_fp = Path(save_directory) / Path(f'MLRun{n}.txt')
         plot_fp.touch()
 
-        classifier_vars_fp = Path(save_directory) / Path(f'MLRunClassiferVars{n}.txt')
+        classifier_vars_fp = Path(save_directory) / Path(f'MLClassifierVarsRun{n}.txt')
         classifier_vars_fp.touch()
 
         ga.classifer_vars_fp = classifier_vars_fp
