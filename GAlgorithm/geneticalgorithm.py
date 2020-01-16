@@ -55,6 +55,7 @@ class GeneticAlgorithm:
     def write_params(self, fp):
         with open(fp, 'w') as f:
             f.write('Genetic Algorithm Input Parameters\n')
+            f.write(f'Population size: {len(self.initial_population)}\n')
             f.write(f'Tournament size: {self.tourny_size}\n')
             f.write(f'Mutation rate: {self.mutation_rate}\n')
             f.write(f'Max function evals: {self.f_eval_max}\n')
