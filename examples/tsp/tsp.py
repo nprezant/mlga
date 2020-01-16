@@ -69,6 +69,8 @@ def run_standard(num_iterations=1, save_directory=DEFAULT_SAVE_DIRECTORY):
     
     Path(save_directory).mkdir(parents=True, exist_ok=True)
 
+    ga.write_params(Path(save_directory) / Path('_params.txt'))
+
     for n in range(num_iterations):
 
         fp = Path(save_directory) / Path(f'StandardRun{n}.txt')
@@ -82,6 +84,8 @@ def run_ml_mod(num_iterations=1, save_directory=DEFAULT_SAVE_DIRECTORY):
     ga = GeneticAlgorithm(**GA_ARGS)
 
     Path(save_directory).mkdir(parents=True, exist_ok=True)
+
+    ga.write_params(Path(save_directory) / Path('_params.txt'))
     
     for n in range(num_iterations):
 
@@ -100,6 +104,8 @@ def run_random(num_iterations=1, save_directory=DEFAULT_SAVE_DIRECTORY):
     ga = GeneticAlgorithm(**GA_ARGS)
 
     Path(save_directory).mkdir(parents=True, exist_ok=True)
+
+    ga.write_params(Path(save_directory) / Path('_params.txt'))
     
     for n in range(num_iterations):
 

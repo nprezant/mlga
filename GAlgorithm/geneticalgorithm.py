@@ -29,7 +29,8 @@ class GeneticAlgorithm:
         select_fn=tournament_selection,
         crossover_fn=order_independent_crossover,
         mutate_fn=gene_based_mutation,
-        tracked_variables_fp=Path('tracked_variables.txt')
+        tracked_variables_fp=Path('tracked_variables.txt'),
+        classifier_class=GaussianNB
     ):
         self.initial_population = initial_population
 
@@ -43,12 +44,22 @@ class GeneticAlgorithm:
         self.training_data_function = training_data_function
         self.classifier_percentage = classifier_percentage
         self.classifer_vars_fp = tracked_variables_fp
+        self.classifier_class = classifier_class
 
         self.select = select_fn
         self.crossover = crossover_fn
         self.mutate = mutate_fn
 
         self.reset()
+
+    def write_params(self, fp):
+        with open(fp, 'w') as f:
+            f.write('Genetic Algorithm Input Parameters\n')
+            f.write(f'Tournament size: {self.tourny_size}\n')
+            f.write(f'Mutation rate: {self.mutation_rate}\n')
+            f.write(f'Max function evals: {self.f_eval_max}\n')
+            f.write(f'Classifer percentage: {self.classifier_percentage}\n')
+            f.write(f'Classifier: {self.classifier_class}\n')
         
     def evolve(self, population, tourny_size, mutation_rate):
         '''Evolves the population to the next generation
@@ -151,7 +162,7 @@ class GeneticAlgorithm:
             raise Exception('Training data function is not defined!')
 
         self.reset()
-        self.classifier = GaussianNB()
+        self.classifier = self.classifier_class()
 
         pop_size = len(self.initial_population.individuals)
 
