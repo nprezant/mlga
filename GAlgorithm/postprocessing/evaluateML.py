@@ -6,6 +6,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
 
+FILL_COLOR = '#ff975790'
+LINE_COLOR = '#e34234'
 
 def plot_classifier_run_data(folder, pattern):
     '''Plots the variables tracked by a ML runs'''
@@ -53,8 +55,8 @@ def plot_classifier_run_data(folder, pattern):
     plt.ylim(0,1)
     plt.title('Classifier Accuracy of Predicting Good Children')
     plt.ylabel('Percentage')
-    plt.fill_between(means[index], good_upper, good_lower, color='#ff975790')
-    means.plot(x=index, y='GoodPredictorPercentage', c='#e34234', ax=ax)
+    plt.fill_between(means[index], good_upper, good_lower, color=FILL_COLOR)
+    means.plot(x=index, y='GoodPredictorPercentage', c=LINE_COLOR, ax=ax)
 
     # Upper/lower ounds of bad predictor percentages
     bad_upper = means[bad_perc] + stds[bad_perc]
@@ -65,8 +67,8 @@ def plot_classifier_run_data(folder, pattern):
     plt.ylim(0,1)
     plt.title('Classifier Accuracy of Predicting Bad Children')
     plt.ylabel('Percentage')
-    plt.fill_between(means[index], bad_upper, bad_lower, color='#ff975790')
-    means.plot(x=index, y='BadPredictorPercentage', c='#e34234', ax=ax)
+    plt.fill_between(means[index], bad_upper, bad_lower, color=FILL_COLOR)
+    means.plot(x=index, y='BadPredictorPercentage', c=LINE_COLOR, ax=ax)
 
     # show plots
     plt.show()
