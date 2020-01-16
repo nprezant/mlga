@@ -29,7 +29,7 @@ def plot_classifier_run_data(folder, pattern):
     df = df.sort_values(index)
 
     # create 10 bins
-    df['quantile'] = pd.qcut(df[index], q=10)
+    df['quantile'] = pd.qcut(df[index], q=20)
 
     # group by the bins
     grouped = df.groupby('quantile')
@@ -51,7 +51,9 @@ def plot_classifier_run_data(folder, pattern):
     # good predictor figure
     fig, ax = plt.subplots()
     plt.ylim(0,1)
-    plt.fill_between(means[index], good_upper, good_lower, color='#00FFFF60')
+    plt.title('Classifier Accuracy of Predicting Good Children')
+    plt.ylabel('Percentage')
+    plt.fill_between(means[index], good_upper, good_lower, color='#ff975790')
     means.plot(x=index, y='GoodPredictorPercentage', c='#e34234', ax=ax)
 
     # Upper/lower ounds of bad predictor percentages
@@ -61,7 +63,9 @@ def plot_classifier_run_data(folder, pattern):
     # bad predictor figure
     fig, ax = plt.subplots()
     plt.ylim(0,1)
-    plt.fill_between(means[index], bad_upper, bad_lower, color='#00FFFF60')
+    plt.title('Classifier Accuracy of Predicting Bad Children')
+    plt.ylabel('Percentage')
+    plt.fill_between(means[index], bad_upper, bad_lower, color='#ff975790')
     means.plot(x=index, y='BadPredictorPercentage', c='#e34234', ax=ax)
 
     # show plots
