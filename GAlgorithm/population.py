@@ -4,6 +4,9 @@ import operator
 from math import ceil
 from statistics import pstdev
 from enum import Enum
+from collections import UserList
+
+from .plot import PlotPoints
 
 class Objective(Enum):
     MAXIMIZE = 1
@@ -73,6 +76,10 @@ class Individual:
     def make_training_data(self):
         '''Makes X training data for the classifier'''
         assert False, 'You must implement the "make_training_data" method to use the classifier'
+
+    def randomize(self):
+        '''Randomizes the genes in this individual'''
+        assert False, 'You must implement the "randomize" method'
 
     def copy(self):
         '''Copies this individual based on whatever it is subclassed into'''
@@ -201,7 +208,7 @@ class Population:
     def get_percentile(self, k):
         '''returns the kth percentile individual'''
         index = ceil(k * len(self.individuals))
-        return [r for i,r in enumerate(self.individuals) if i == index][0] # SHOULD THIS BE SELF.RANKED()??
+        return [r for i,r in enumerate(self.ranked) if i == index][0]
 
     def get_standard_deviation(self):
         '''Returns the standard deviation of the population's fitness'''
@@ -214,6 +221,21 @@ class Population:
 
     def __repr__(self):
         return f'Pop; routes: {len(self.individuals)}; cities: {len(self.individuals[0])}'
+
+    def __len__(self):
+        return len(self.individuals)
+
+
+class PopulationHistory(UserList):
+    
+    def to_csv(self, fp):
+        points = PlotPoints()
+        points.create_from_ga_history(self.data)
+
+        with open(fp, 'w') as f:
+            f.write(points.csv_headers())
+
+        points.write_csv(fp, 'a')
 
 
 def initialize_population(pop_size, indiv_size, allowed_params, Individual=Individual, default_val=None, Gene=Gene):

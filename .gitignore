@@ -2,6 +2,12 @@ __pycache__
 .vs
 .vscode
 
+data*
+
 *.pyproj
 *.sln
 *.pptx
+*.xlsx
+*.docx
+
+tracked_variables.txt

@@ -37,7 +37,7 @@ def run():
     )
     ga.fitness_params = {'target':target}
 
-    ga.run_without_ml()
+    ga.run()
     hist1 = (ga.pop_history.copy(), 'Without ML')
     for p in ga.pop_history:
         print('Fitness={}: {}'.format(p.best_individual.fitness, p.best_individual))

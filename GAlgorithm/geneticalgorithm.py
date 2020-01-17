@@ -1,9 +1,12 @@
 
 import random
+from pathlib import Path
 
 from sklearn.naive_bayes import GaussianNB
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.tree import DecisionTreeClassifier
 
-from .population import Population, Objective
+from .population import Population, Objective, PopulationHistory
 from .evolution import (
     order_independent_crossover, 
     tournament_selection, 
@@ -23,21 +26,42 @@ class GeneticAlgorithm:
         f_eval_max=4000, 
         fitness_params={}, 
         training_data_function=None, 
-        classifier_percentage=0.4
+        classifier_percentage=0.4,
+        select_fn=tournament_selection,
+        crossover_fn=order_independent_crossover,
+        mutate_fn=gene_based_mutation,
+        tracked_variables_fp=Path('tracked_variables.txt'),
+        classifier_class=GaussianNB
     ):
         self.initial_population = initial_population
+
         self.mutation_rate = mutation_rate
         self.tourny_size = tourny_size
         self.f_eval_max = f_eval_max
-        self.training_data_function = training_data_function
+
         self.fitness_function = fitness_function
         self.fitness_params = fitness_params
+
+        self.training_data_function = training_data_function
         self.classifier_percentage = classifier_percentage
+        self.classifer_vars_fp = tracked_variables_fp
+        self.classifier_class = classifier_class
+
+        self.select = select_fn
+        self.crossover = crossover_fn
+        self.mutate = mutate_fn
+
         self.reset()
 
-        self.select = tournament_selection
-        self.crossover = order_independent_crossover
-        self.mutate = gene_based_mutation
+    def write_params(self, fp):
+        with open(fp, 'w') as f:
+            f.write('Genetic Algorithm Input Parameters\n')
+            f.write(f'Population size: {len(self.initial_population)}\n')
+            f.write(f'Tournament size: {self.tourny_size}\n')
+            f.write(f'Mutation rate: {self.mutation_rate}\n')
+            f.write(f'Max function evals: {self.f_eval_max}\n')
+            f.write(f'Classifer percentage: {self.classifier_percentage}\n')
+            f.write(f'Classifier: {self.classifier_class}\n')
         
     def evolve(self, population, tourny_size, mutation_rate):
         '''Evolves the population to the next generation
@@ -50,35 +74,49 @@ class GeneticAlgorithm:
     def reset(self):
         '''resets the variables necessary to re-run the genetic algorithm'''
         self.f_evals = 0
-        self.pop_history = []
+        self.pop_history = PopulationHistory()
+        self.classifer_var_tracker = {
+            'FunctionEvaluation': [],
+            'ClassifiedGood': [],
+            'ClassifiedBad': [],
+            'ClassifiedGoodActuallyGood': [],
+            'ClassifiedGoodActuallyBad': [],
+            'ClassifiedBadActuallyBad': [],
+            'ClassifiedBadActuallyGood': [],
+            'GoodPredictorPercentage': [],
+            'BadPredictorPercentage': [],
+        }
 
-    # def run_random(self):
-    #     '''generates random population with the "initialize" function
+    def run_random(self):
+        '''generates random population with the "initialize" function
 
-    #     culls new populations to ensure the fitness does not move backwards'''
+        culls new populations to ensure the fitness does not move backwards
+        '''
 
-    #     self.reset()
-    #     pop_size = len(self.initial_population.individuals)
+        self.reset()
+        pop_size = len(self.initial_population.individuals)
 
-    #     new_population = self.initial_population.copy()
-    #     self.pop_history.append(new_population)
+        new_population = self.initial_population.copy()
+        self.pop_history.append(new_population)
 
-    #     while self.f_evals < self.f_eval_max:
-    #         # run objective function and keep count
-    #         objective_calls = new_population.evaluate(self.fitness_function, self.fitness_params)
-    #         self.f_evals += objective_calls
+        while self.f_evals < self.f_eval_max:
+            # run objective function and keep count
+            objective_calls = new_population.evaluate(self.fitness_function, self.fitness_params)
+            self.f_evals += objective_calls
 
-    #         # only keep the best of the old and new population
-    #         population = cull(pop_size, self.pop_history[-1], new_population)
+            # only keep the best of the old and new population
+            population = cull(pop_size, self.pop_history[-1], new_population)
 
-    #         # add population to the history, and update the function evals it took
-    #         population.f_evals = objective_calls
-    #         self.pop_history.append(population)
+            # add population to the history, and update the function evals it took
+            population.f_evals = objective_calls
+            self.pop_history.append(population)
 
-    #         # evolve population
-    #         new_population = self.evolve(population, self.tourny_size, self.mutation_rate)
+            # create new population
+            new_population = population.copy()
+            for p in new_population.individuals:
+                p.randomize()
 
-    def run_without_ml(self):
+    def run(self):
         '''runs the genetic algorithm without machine learning'''
 
         self.reset()
@@ -126,7 +164,7 @@ class GeneticAlgorithm:
             raise Exception('Training data function is not defined!')
 
         self.reset()
-        self.classifier = GaussianNB()
+        self.classifier = self.classifier_class()
 
         pop_size = len(self.initial_population.individuals)
 
@@ -180,8 +218,138 @@ class GeneticAlgorithm:
 
             # classify
             good_pop, bad_pop = self.classify(new_population)
+
+            # progress update
+            # print(
+            #     f'Fn evals: {self.f_evals}/{self.f_eval_max} '
+            #     f'Classified {len(good_pop)} children as good.'
+            # )
+
+            self.record_tracker_data(good_pop.copy(), bad_pop.copy(), new_population.copy())
             new_population = good_pop
-            print(f'Classifier chose {len(good_pop.individuals)} children as good')
+
+        self.save_tracked_variables(self.classifer_vars_fp)
+
+    def record_tracker_data(self, classified_good_pop, classified_bad_pop, total_pop):
+
+        # record data
+        self.classifer_var_tracker['FunctionEvaluation'].append(self.f_evals)
+        self.classifer_var_tracker['ClassifiedGood'].append(len(classified_good_pop))
+        self.classifer_var_tracker['ClassifiedBad'].append(len(classified_bad_pop))
+        
+        # evaluate all of the populations
+        classified_good_pop.evaluate(self.fitness_function, self.fitness_params)
+        classified_bad_pop.evaluate(self.fitness_function, self.fitness_params)
+        total_pop.evaluate(self.fitness_function, self.fitness_params)
+
+        # determine performance of classifying "good"
+        if len(classified_good_pop) == 0:
+            classified_good_actually_good = 0
+            classified_good_actually_bad = 0
+        else:
+            min_fitness = total_pop.min_fitness
+            max_fitness = total_pop.max_fitness
+
+            delta = max_fitness - min_fitness
+            perc = self.classifier_percentage
+
+            if Population.objective_type == Objective.MAXIMIZE:
+                cutoff = max_fitness - (delta * perc)
+                classified_good_actually_good_pop = [i for i in classified_good_pop.individuals if i.fitness > cutoff]
+                classified_good_actually_bad_pop = [i for i in classified_good_pop.individuals if i.fitness < cutoff]
+            else:
+                cutoff = min_fitness + (delta * perc)
+                classified_good_actually_good_pop = [i for i in classified_good_pop.individuals if i.fitness < cutoff]
+                classified_good_actually_bad_pop = [i for i in classified_good_pop.individuals if i.fitness > cutoff]
+
+            classified_good_actually_good = len(classified_good_actually_good_pop)
+            classified_good_actually_bad = len(classified_good_actually_bad_pop)
+
+        self.classifer_var_tracker['ClassifiedGoodActuallyGood'].append(classified_good_actually_good)
+        self.classifer_var_tracker['ClassifiedGoodActuallyBad'].append(classified_good_actually_bad)
+
+        # determine performance of classifying "bad"
+        if len(classified_bad_pop) == 0:
+            classified_bad_actually_good = 0
+            classified_bad_actually_bad = 0
+        else:
+            min_fitness = total_pop.min_fitness
+            max_fitness = total_pop.max_fitness
+
+            delta = max_fitness - min_fitness
+            perc = self.classifier_percentage
+
+            if Population.objective_type == Objective.MAXIMIZE:
+                cutoff = max_fitness - (delta * perc)
+                classified_bad_actually_good_pop = [i for i in classified_bad_pop.individuals if i.fitness > cutoff]
+                classified_bad_actually_bad_pop = [i for i in classified_bad_pop.individuals if i.fitness < cutoff]
+            else:
+                cutoff = min_fitness + (delta * perc)
+                classified_bad_actually_good_pop = [i for i in classified_bad_pop.individuals if i.fitness < cutoff]
+                classified_bad_actually_bad_pop = [i for i in classified_bad_pop.individuals if i.fitness > cutoff]
+
+            classified_bad_actually_good = len(classified_bad_actually_good_pop)
+            classified_bad_actually_bad = len(classified_bad_actually_bad_pop)
+        
+        self.classifer_var_tracker['ClassifiedBadActuallyBad'].append(classified_bad_actually_bad)
+        self.classifer_var_tracker['ClassifiedBadActuallyGood'].append(classified_bad_actually_good)
+
+        # how accurate is the classifier?
+        try:
+            self.classifer_var_tracker['GoodPredictorPercentage'].append(classified_good_actually_good / len(classified_good_pop))
+        except ZeroDivisionError:
+            if classified_bad_actually_good == 0:
+                self.classifer_var_tracker['GoodPredictorPercentage'].append(1)
+            else:
+                self.classifer_var_tracker['GoodPredictorPercentage'].append(0)
+
+        try:
+            self.classifer_var_tracker['BadPredictorPercentage'].append(classified_bad_actually_bad / len(classified_bad_pop))
+        except ZeroDivisionError:
+            if classified_good_actually_bad == 0:
+                self.classifer_var_tracker['BadPredictorPercentage'].append(1)
+            else:
+                self.classifer_var_tracker['BadPredictorPercentage'].append(0)
+
+    def save_tracked_variables(self, fp: Path):
+        
+        # classifier accuracy indicators
+        good_percentages = self.classifer_var_tracker['GoodPredictorPercentage']
+        good_accuracy = sum(good_percentages) / len(good_percentages)
+
+        bad_percentages = self.classifer_var_tracker['BadPredictorPercentage']
+        bad_accuracy = sum(bad_percentages) / len(bad_percentages)
+
+        accuracy_summary = (
+            'Classifier predicts good children with an accuracy of '
+            f'{round(good_accuracy*100, 1)}%, and bad children with '
+            f'an accuracy of {round(bad_accuracy*100, 1)}%\r'
+        )
+
+        if not fp.exists():
+            fp.touch()
+        
+        with open(fp, 'w') as f:
+
+            print(accuracy_summary)
+            f.write(accuracy_summary)
+
+            # headers
+            headers = []
+            for header in self.classifer_var_tracker.keys():
+                headers.append(header)
+                f.write(f'{header}\t')
+
+            # add mean fitness header
+            f.write('Mean Fitness\r')
+
+            # values
+            for row in range(len(self.classifer_var_tracker[headers[0]])):
+                for header in headers:
+                    item = self.classifer_var_tracker[header]
+                    f.write(f'{item[row]}\t')
+
+                f.write(f'{self.pop_history[row].mean_fitness}\r')
 
     def train_classifier(self, poph):
         '''Updates the classifier a list of all the prior populations given'''

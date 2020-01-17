@@ -65,7 +65,7 @@ def run():
     ga = GeneticAlgorithm(init_pop, fitness, 2, 0.05, 20000)
     ga.fitness_params = {'items':items, 'max_weight':max_weight}
 
-    ga.run_without_ml()
+    ga.run()
     hist1 = (ga.pop_history.copy(), 'Without ML')
     for p in ga.pop_history:
         value, weight = sum_knapsack(p.best_individual, items)
