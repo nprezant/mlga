@@ -41,8 +41,8 @@ def plot_fitness_data(folder, patterns: list):
         # sort by function evaluation
         df = df.sort_values(index)
 
-        # create 10 bins
-        df['quantile'] = pd.qcut(df[index], q=20)
+        # create bins
+        df['quantile'] = pd.qcut(df[index], q=30)
 
         # group by the bins
         grouped = df.groupby('quantile')
