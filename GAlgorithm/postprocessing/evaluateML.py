@@ -4,7 +4,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from scipy.optimize import curve_fit
 
 FILL_COLOR = '#ff975790'
 LINE_COLOR = '#e34234'
