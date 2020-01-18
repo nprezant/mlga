@@ -31,7 +31,7 @@ class GeneticAlgorithm:
         crossover_fn=order_independent_crossover,
         mutate_fn=gene_based_mutation,
         tracked_variables_fp=Path('tracked_variables.txt'),
-        classifier_class=GaussianNB
+        classifier_class=KNeighborsClassifier
     ):
         self.initial_population = initial_population
 
