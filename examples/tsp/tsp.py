@@ -31,9 +31,7 @@ from .plot import plot_histories
 
 DEFAULT_SAVES = SaveLocation(
     Path().cwd() / Path('data'),
-    'Run',
-    'BestOfRun',
-    'PerformanceOfRun'
+    'Default',
 )
 
 
@@ -96,7 +94,7 @@ def run(iterations=1, saves=DEFAULT_SAVES,  algorithm=Algorithm.STANDARD, **kwar
     saves.base_folder.mkdir(parents=True, exist_ok=True)
 
     # write out the GA parameters
-    ga.write_params(saves.params_fp)
+    ga.write_params(saves.params_fp())
 
     # iterate the GA
     for n in range(iterations):

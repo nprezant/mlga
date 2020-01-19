@@ -6,18 +6,17 @@ import matplotlib.pyplot as plt
 import examples
 
 from GAlgorithm import (
-    plot_classifier_run_data,
-    plot_fitness_data,
     SaveLocation,
+    SaveData,
     Algorithm
 )
 
 n = 1
 folder = Path().cwd() / Path(f'data{n}')
 
-rnd_saves = SaveLocation(folder, 'RandomRun', 'BestOfRandomRun', 'PerformanceOfRandomRun')
-std_saves = SaveLocation(folder, 'StandardRun', 'BestOfStandardRun', 'PerformanceOfStandardRun')
-ml_saves = SaveLocation(folder, 'MLRun', 'BestOfMLRun', 'PerformanceOfMLRun')
+rnd_saves = SaveLocation(folder, 'Random')
+std_saves = SaveLocation(folder, 'Standard')
+ml_saves = SaveLocation(folder, 'ML')
 
 run = False
 plot = True
@@ -29,8 +28,22 @@ if run:
     examples.run_tsp(n, ml_saves, algorithm=Algorithm.ML)
 
 # plot GA data
-# if plot:
-#     _, ax = plt.subplots()
-#     plot_fitness_data(data_path, ['StandardRun*', 'RandomRun*'])
-#     plot_fitness_data(data_path, file_patterns)
-#     plot_classifier_run_data(data_path, 'MLClassifierVarsRun*')
+if plot:
+
+    # fitness data
+    _, ax_fitness = plt.subplots()
+    save_data = SaveData(rnd_saves, std_saves, ml_saves)
+    save_data.plot_fitness('Random', ax=ax_fitness)
+    save_data.plot_fitness('Standard', ax=ax_fitness)
+    save_data.plot_fitness('ML', ax=ax_fitness)
+
+    # classifer performance data
+    _, ax_good = plt.subplots()
+    _, ax_bad = plt.subplots()
+    save_data.plot_performance('ML', ax1=ax_good, ax2=ax_bad)
+
+    # best routes
+    # save_data.plot_best('Random', plot_city_fn)
+
+    # show plots
+    plt.show()

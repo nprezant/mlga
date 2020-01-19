@@ -1,87 +1,59 @@
 
 from pathlib import Path
 
-from ..plot import PlotPoints, fitness_plot_from_points
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
 
 
-def plot_many_objective_files(folder, run_file_patterns, mean=True):
+COLORS = [
+    '#ff881f',
+    '#36a436',
+    '#3c89bd',
+]
 
-    folder = Path(folder)
+cindex = 0
 
-    if mean == True:
-        plot_objective_files_mean(folder, run_file_patterns)
-    else:
-        for pattern in run_file_patterns:
-            plot_objective_files(folder, pattern)
+def plot_fitness_df(df, label='Fitness', ax=None):
 
+        # define name of index column for convenience
+        index = 'Function Evaluations'
 
-def plot_objective_files(folder, pattern):
+        # sort by function evaluation
+        df = df.sort_values(index)
 
-    points_list = []
+        # create bins
+        df['quantile'] = pd.qcut(df[index], q=30)
 
-    for fp in folder.glob(pattern):
+        # group by the bins
+        grouped = df.groupby('quantile')
 
-        points = PlotPoints()
-        points.read_csv(fp)
+        # find the mean of each bin
+        means = grouped.mean()
 
-        points_list.append((points, fp.stem))
+        # get color
+        global cindex
+        try:
+            color = COLORS[cindex]
+        except IndexError:
+            cindex = 0
+            color = COLORS[cindex]
+        finally:
+            cindex += 1
 
-    fitness_plot_from_points(points_list, pattern)
+        # set plot commands based on input axis
+        if ax is None:
+            ax = plt
+            ax_arg = None
+        else:
+            ax_arg = ax
 
+        # plot
+        ax.fill_between(x=means[index], y1=means['90th Percentile'], y2=means['10th Percentile'], color=color, alpha=0.3)
+        means.plot(x=index, y='Mean Fitness', c=color, ax=ax_arg, label=label)
 
-def plot_objective_files_interpolations(folder, pattern):
-
-    points_list = []
-
-    for fp in folder.glob(pattern):
-
-        # read the file
-        points = PlotPoints()
-        points.read_csv(fp)
-
-        # interpolate at each evaluation
-        points.interp(1)
-
-        points_list.append((points, fp.stem))
-
-    fitness_plot_from_points(points_list, pattern)
-
-
-def objective_files_mean_points(folder, pattern):
-
-    mean_points = PlotPoints()
-
-    for fp in folder.glob(pattern):
-
-        # read the file
-        points = PlotPoints()
-        points.read_csv(fp)
-
-        # interpolate at each evaluation
-        points.interp(1)
-
-        # add these points to the mean
-        mean_points.add_to_mean(points)
-
-    return mean_points
-
-
-def plot_objective_file_mean(folder, pattern):
-
-    mean_points = objective_files_mean_points(folder, pattern)
-
-    fitness_plot_from_points([(mean_points, 'Means')], pattern)
-
-
-def plot_objective_files_mean(folder, patterns):
-
-    points_list = []
-
-    for pattern in patterns:
-        mean_points = objective_files_mean_points(folder, pattern)
-        points_list.append((mean_points, f'Mean of {pattern}'))
-
-    fitness_plot_from_points(points_list, 'GA Comparison')
-
-
-# TODO 2) import and plot ML classifier variables
+        # axis settings
+        ax.set_title('Fitness Curves')
+        ax.set_xlabel('Function Evaluations')
+        ax.set_ylabel('Fitness')
+        
