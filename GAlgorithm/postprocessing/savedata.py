@@ -5,7 +5,7 @@ from pathlib import Path
 import pandas as pd
 
 from .base import SaveLocation
-from .plot import plot_fitness_df
+from .fitness import plot_fitness_df
 from .evaluateML import plot_performance_df
 
 
