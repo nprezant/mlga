@@ -46,5 +46,12 @@ if plot:
     _, ax_best = plt.subplots()
     save_data.plot_best('Random', examples.plot_individual_csv, ax_best)
 
+    # plot stats
+    _, ax_stats = plt.subplots()
+    save_data.plot_convergence(
+        ['Random', 'Standard', 'ML'],
+        target=630, ax=ax_stats
+    )
+
     # show plots
     plt.show()

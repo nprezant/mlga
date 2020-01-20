@@ -3,6 +3,7 @@
 from pathlib import Path
 
 import pandas as pd
+from matplotlib.table import Table
 
 from .base import SaveLocation
 from .fitness import plot_fitness_df
@@ -65,3 +66,36 @@ class SaveData:
         # plot individual data
         plot_fn(fp, label=fp.stem, ax=ax)
 
+    def plot_convergence(self, locs: str, target, ax=None):
+        ''' Plot the convergence of the save data in a given location '''
+
+        index = []
+        optimums = []
+        pop_contains = []
+
+        for loc in locs:
+            # try to get the location of the save data
+            location: SaveLocation = self._locations[loc]
+            location.read_convergence_stats(target)
+
+            index.append(location.base_name)
+            optimums.append(location.f_evals_to_converge)
+            pop_contains.append(location.f_evals_to_get_target_in_pop)
+
+        # construct dataframe
+        df = pd.DataFrame(
+            {
+                'Converged': optimums,
+                'Discovered Optimum': pop_contains,
+            },
+            index = index
+        )
+
+        # plot
+        ax = df.plot.bar(rot=0, ax=ax)
+        ax.set_xlabel('Algorithm Run')
+        ax.set_ylabel('Function Evaluation')
+        ax.set_title('Function Evaluations to Converge')
+
+        # write convergence data to csv
+        df.to_csv(location.base_folder / Path('_convergence.txt'))

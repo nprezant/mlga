@@ -6,6 +6,7 @@ from enum import Enum
 import pandas as pd
 
 from GAlgorithm import Population, Objective
+from .fitness import convergence_stats
 
 
 class Algorithm(Enum):
@@ -29,6 +30,7 @@ class SaveLocation:
         self.best_file = Path(f'BestOf{base_name}Run')
         self.performance_file = Path(f'PerformanceOf{base_name}Run')
         self.params_file = params_file
+        self.convergence_file = Path(f'ConvergenceOf{base_name}Runs')
 
         self.params_file = Path(params_file)
 
@@ -52,6 +54,9 @@ class SaveLocation:
 
     def performance_fp(self, n):
         return self._number(self.performance_file, n)
+
+    def convergence_fp(self):
+        return self.base_folder / self.convergence_file
 
     def _number(self, name, n):
         return self.base_folder / f'{name.stem}{n}{name.suffix}'
@@ -110,6 +115,29 @@ class SaveLocation:
             self._best_individual_fp = best_fp
 
         return self._best_individual_fp
+
+    # convergence variables
+    def reset_convergence_stats(self):
+        self._f_evals_to_converge = None
+        self._f_evals_to_get_target_in_pop = None
+    
+    def read_convergence_stats(self, target, tolerance=0.10):
+        ''' Determine the convergence statistics '''
+        a, b = convergence_stats(self.fitness_df, target, tolerance)
+        self._f_evals_to_converge = a
+        self._f_evals_to_get_target_in_pop = b
+
+    @property
+    def f_evals_to_converge(self):
+        if self._f_evals_to_converge is None:
+            raise LookupError('Must run "read_convergence_stats" first')
+        return self._f_evals_to_converge
+
+    @property
+    def f_evals_to_get_target_in_pop(self):
+        if self._f_evals_to_get_target_in_pop is None:
+            raise LookupError('Must run "read_convergence_stats" first')
+        return self._f_evals_to_get_target_in_pop
 
 
 def read_files(folder, pattern, **kwargs) -> pd.DataFrame:
