@@ -39,12 +39,16 @@ if plot:
     # set up the save data
     save_data = SaveData(rnd_saves, std_saves, ml1_saves, ml2_saves)
 
-    # fitness data
+    # fitness data -- different GA types
     _, ax_fitness = plt.subplots()
     save_data.plot_fitness('Random', ax=ax_fitness)
     save_data.plot_fitness('Standard', ax=ax_fitness)
     save_data.plot_fitness('ML_KNN', ax=ax_fitness)
-    save_data.plot_fitness('ML_DT', ax=ax_fitness)
+
+    # fitness data -- comparing ML classifiers
+    _, ax_ml_fitness = plt.subplots()
+    save_data.plot_fitness('ML_KNN', ax=ax_ml_fitness)
+    save_data.plot_fitness('ML_DT', ax=ax_ml_fitness)
 
     # classifer performance data
     _, ax_good = plt.subplots()
