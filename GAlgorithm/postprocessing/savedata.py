@@ -53,3 +53,15 @@ class SaveData:
         # plot performance data
         plot_performance_df(df, label=location.base_name, ax1=ax1, ax2=ax2)
 
+    def plot_best(self, loc: str, plot_fn, ax=None):
+        ''' Plot the best individual of the save data in a given location'''
+
+        # try to get the location of the save data
+        location = self._locations[loc]
+
+        # get the df of the best individual
+        fp = location.best_individual_fp
+
+        # plot individual data
+        plot_fn(fp, label=fp.stem, ax=ax)
+

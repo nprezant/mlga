@@ -43,7 +43,8 @@ if plot:
     save_data.plot_performance('ML', ax1=ax_good, ax2=ax_bad)
 
     # best routes
-    # save_data.plot_best('Random', plot_city_fn)
+    _, ax_best = plt.subplots()
+    save_data.plot_best('Random', examples.plot_individual_csv, ax_best)
 
     # show plots
     plt.show()

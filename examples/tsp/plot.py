@@ -1,7 +1,9 @@
 
 import sys
+from pathlib import Path
 from operator import itemgetter
 
+import pandas as pd
 import matplotlib.pyplot as plt
 
 
@@ -127,3 +129,34 @@ def plot_population(pop):
             _, = ax.plot(route.x, route.y, 'r--')
             ax.axis('equal')
     plt.show()
+
+
+def plot_individual_csv(fp, **kwargs):
+    ''' Plots a single set of cities.
+    Kwargs passed into plotting function
+    '''
+
+    fp = Path(fp)
+
+    # verify fp exists
+    if not fp.exists():
+        print(f'Could not find file: {fp.name}')
+        return
+
+    # read file
+    df = pd.read_csv(fp, '\t')
+
+    # add first city to the bottom of dataframe
+    first = df.iloc[0]
+    df = df.append(first)
+
+    # plot
+    ax = df.plot(
+        x='x', y='y',
+        color='green', marker='o', linestyle='dashed',
+        linewidth=2, markersize=12, **kwargs,
+    )
+    ax.set_xlabel('x')
+    ax.set_ylabel('y')
+
+

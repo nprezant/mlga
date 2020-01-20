@@ -34,6 +34,9 @@ class SaveLocation:
 
         # data frames
         self.reset_dataframes()
+
+        # best file paths
+        self.reset_best_filepaths()
     
     # file paths
     def params_fp(self):
@@ -75,6 +78,31 @@ class SaveLocation:
                 header=1
             )
         return self._performance_df
+
+    # best individual file path
+    def reset_best_filepaths(self):
+        self._best_individual_fp = None
+
+    @property
+    def best_individual_fp(self):
+        if self._best_individual_fp is None:
+
+            # get the fitness dataframe
+            fit_df = self.fitness_df
+
+            # index and file name of the run with the best fitness
+            idx = fit_df[['Mean Fitness']].idxmin() # TODO make applicable to max fitness applications too
+            f_name = fit_df.at[int(idx), 'FileName']
+            
+            # get run number from the best fitness file
+            base_len = len(self.run_file.stem)
+            run_number = f_name[base_len:]
+
+            # make the name of the best individual file
+            best_fp = self.best_fp(run_number)
+            self._best_individual_fp = best_fp
+
+        return self._best_individual_fp
 
 
 def read_files(folder, pattern, **kwargs) -> pd.DataFrame:
