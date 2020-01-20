@@ -42,7 +42,7 @@ class SaveData:
         # plot fitness data
         plot_fitness_df(df, label=location.base_name, ax=ax)
 
-    def plot_performance(self, loc: str, ax1=None, ax2=None):
+    def plot_performance(self, loc: str, ax1=None, ax2=None, quantiles=20):
         ''' Plots the performance of the save data in a given location '''
 
         # try to get the location of the save data
@@ -52,7 +52,7 @@ class SaveData:
         df = location.performance_df
 
         # plot performance data
-        plot_performance_df(df, label=location.base_name, ax1=ax1, ax2=ax2)
+        plot_performance_df(df, label=location.base_name, ax1=ax1, ax2=ax2, quantiles=quantiles)
 
     def plot_best(self, loc: str, plot_fn, ax=None):
         ''' Plot the best individual of the save data in a given location'''

@@ -97,6 +97,9 @@ class SaveLocation:
             # get the fitness dataframe
             fit_df = self.fitness_df
 
+            # reset the df index -- right now there are duplicates
+            fit_df = fit_df.reset_index(drop=True)
+
             # index of the run with the best fitness
             if Population.objective_type == Objective.MINIMIZE:
                 idx = fit_df[['Mean Fitness']].idxmin()

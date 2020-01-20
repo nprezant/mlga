@@ -5,12 +5,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-
-COLORS = [
-    '#ff881f',
-    '#36a436',
-    '#3c89bd',
-]
+from .plotoptions import COLORS
 
 # define name of index column for convenience
 INDEX = 'Function Evaluations'
