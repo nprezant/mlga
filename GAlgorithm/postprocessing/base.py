@@ -5,6 +5,8 @@ from enum import Enum
 
 import pandas as pd
 
+from GAlgorithm import Population, Objective
+
 
 class Algorithm(Enum):
     STANDARD = 1
@@ -90,8 +92,13 @@ class SaveLocation:
             # get the fitness dataframe
             fit_df = self.fitness_df
 
-            # index and file name of the run with the best fitness
-            idx = fit_df[['Mean Fitness']].idxmin() # TODO make applicable to max fitness applications too
+            # index of the run with the best fitness
+            if Population.objective_type == Objective.MINIMIZE:
+                idx = fit_df[['Mean Fitness']].idxmin()
+            else:
+                idx = fit_df[['Mean Fitness']].idxmax()
+
+            # file name of the run with the best fitness
             f_name = fit_df.at[int(idx), 'FileName']
             
             # get run number from the best fitness file
