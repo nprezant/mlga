@@ -6,6 +6,9 @@ from operator import itemgetter
 import pandas as pd
 import matplotlib.pyplot as plt
 
+from .io import read_cities
+from .population import Route, compute_fitness
+
 
 def plot_histories(pop_histories:list):
     plt.style.use('seaborn-whitegrid')
@@ -149,6 +152,19 @@ def plot_individual_csv(fp, **kwargs):
     # add first city to the bottom of dataframe
     first = df.iloc[0]
     df = df.append(first)
+
+    # determine the fitness of this route
+    route = Route(read_cities(fp))
+    fitness = compute_fitness(route)
+    rounded_fitness = round(fitness, 2)
+
+    # add fitness to the label (it may have been passed in)
+    if 'label' in kwargs:
+        label = kwargs['label'] + f' ({rounded_fitness})'
+    else:
+        label = f'Fitness = {rounded_fitness}'
+
+    kwargs['label'] = label
 
     # plot
     ax = df.plot(

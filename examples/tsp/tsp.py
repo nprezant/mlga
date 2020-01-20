@@ -27,6 +27,7 @@ from .evolution import (
 )
     
 from .plot import plot_histories
+from .io import read_cities
 
 
 DEFAULT_SAVES = SaveLocation(
@@ -34,21 +35,6 @@ DEFAULT_SAVES = SaveLocation(
     'Default',
 )
 
-
-def read_cities(fp):
-    '''reads in the starter cities from a saved file'''
-    
-    cities = []
-
-    with open(fp, 'r') as f:
-        f.readline()
-        for line in f:
-            xy = line.split('\t')
-            x = int(xy[0])
-            y = int(xy[1])
-            cities.append(City(x,y))
-
-    return cities
     
 def make_initial_population(cities_fp, size):
     cities = read_cities(cities_fp)
@@ -115,16 +101,3 @@ def run(iterations=1, saves=DEFAULT_SAVES,  algorithm=Algorithm.STANDARD, **kwar
 
         # save the best individual in this run
         ga.pop_history[-1].best_individual.to_csv(saves.best_fp(n))
-
-def make_cities(numcities: int):
-    cities = [City().randomize(0,200,0,200) for i in range(numcities)]
-    route = Route(cities)
-    return route
-
-def write_cities(numcities: int):
-    route = make_cities(numcities)
-    route.to_csv(f'cities\\{numcities}cities.txt')
-
-
-if __name__ == '__main__':
-    make_cities(30)
