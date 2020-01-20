@@ -53,5 +53,11 @@ if plot:
         target=630, ax=ax_stats
     )
 
+    # plot classifier performance summary
+    _, ax_perf = plt.subplots()
+    save_data.plot_performance_summary(
+        ['ML'], ax=ax_perf
+    )
+
     # show plots
     plt.show()

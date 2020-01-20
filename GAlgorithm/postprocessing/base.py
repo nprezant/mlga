@@ -139,6 +139,16 @@ class SaveLocation:
             raise LookupError('Must run "read_convergence_stats" first')
         return self._f_evals_to_get_target_in_pop
 
+    # performance averages
+    def get_performance_averages(self):
+        ''' Gets the averages of the performance dataframe '''
+        df = self.performance_df
+
+        good = df['GoodPredictorPercentage'].mean()
+        bad = df['BadPredictorPercentage'].mean()
+
+        return good, bad
+
 
 def read_files(folder, pattern, **kwargs) -> pd.DataFrame:
 

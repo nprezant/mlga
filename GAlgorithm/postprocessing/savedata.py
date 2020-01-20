@@ -99,3 +99,38 @@ class SaveData:
 
         # write convergence data to csv
         df.to_csv(location.base_folder / Path('_convergence.txt'))
+
+    def plot_performance_summary(self, locs: str, ax=None):
+        ''' Plots the performance of many save locations on one bar chart '''
+        index = []
+        goods = []
+        bads = []
+
+        for loc in locs:
+            # try to get the location of the save data
+            location: SaveLocation = self._locations[loc]
+
+            # get the average of the good and bad indicators
+            good, bad = location.get_performance_averages()
+
+            index.append(location.base_name)
+            goods.append(good)
+            bads.append(bad)
+
+        # construct dataframe
+        df = pd.DataFrame(
+            {
+                'Predicting Good Children': goods,
+                'Predicting Bad Children': bads,
+            },
+            index = index
+        )
+
+        # plot
+        ax = df.plot.bar(rot=0, ax=ax)
+        ax.set_xlabel('Algorithm Run')
+        ax.set_ylabel('Percentage')
+        ax.set_title('Classifier Performance')
+
+        # write performance summary to csv
+        df.to_csv(location.base_folder / Path('_performance.txt'))
