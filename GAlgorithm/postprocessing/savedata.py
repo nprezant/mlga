@@ -8,6 +8,7 @@ from matplotlib.table import Table
 from .base import SaveLocation
 from .fitness import plot_fitness_df
 from .evaluateML import plot_performance_df
+from .plotoptions import COLORS
 
 
 class SaveData:
@@ -92,7 +93,7 @@ class SaveData:
         )
 
         # plot
-        ax = df.plot.bar(rot=0, ax=ax)
+        ax = df.plot.bar(rot=0, ax=ax, color=COLORS)
         ax.set_xlabel('Algorithm Run')
         ax.set_ylabel('Function Evaluation')
         ax.set_title('Function Evaluations to Converge')
@@ -127,7 +128,7 @@ class SaveData:
         )
 
         # plot
-        ax = df.plot.bar(rot=0, ax=ax)
+        ax = df.plot.bar(rot=0, ax=ax, color=COLORS)
         ax.set_xlabel('Algorithm Run')
         ax.set_ylabel('Percentage')
         ax.set_title('Classifier Performance')

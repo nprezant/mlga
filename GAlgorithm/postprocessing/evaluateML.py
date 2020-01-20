@@ -61,7 +61,7 @@ def plot_performance_df(
         cindex += 1
 
     # good predictor figure
-    ax1.fill_between(means[index], good_upper, good_lower, color=color, alpha=0.5)
+    ax1.fill_between(means[index], good_upper, good_lower, color=color, alpha=0.3)
     means.plot(x=index, y='GoodPredictorPercentage', label=label, c=color, ax=ax1_arg)
 
     # axis settings
@@ -82,7 +82,7 @@ def plot_performance_df(
         ax2_arg = ax2
 
     # bad predictor figure
-    ax2.fill_between(means[index], bad_upper, bad_lower, color=color, alpha=0.5)
+    ax2.fill_between(means[index], bad_upper, bad_lower, color=color, alpha=0.3)
     means.plot(x=index, y='BadPredictorPercentage', label=label, c=color, ax=ax2_arg)
 
     # axis settings
