@@ -24,7 +24,7 @@ ml1_saves = SaveLocation(folder, 'ML_KNN')
 ml2_saves = SaveLocation(folder, 'ML_DT')
 ml3_saves = SaveLocation(folder, 'ML_NB')
 
-run = True
+run = False
 plot = True
 
 # generate GA run data
@@ -43,9 +43,9 @@ if plot:
 
     # fitness data -- different GA types
     _, ax_fitness = plt.subplots()
-    save_data.plot_fitness('Random', ax=ax_fitness)
-    save_data.plot_fitness('Standard', ax=ax_fitness)
-    save_data.plot_fitness('ML_KNN', ax=ax_fitness)
+    save_data.plot_fitness('Random', ax=ax_fitness, quantiles=50)
+    save_data.plot_fitness('Standard', ax=ax_fitness, quantiles=50)
+    save_data.plot_fitness('ML_KNN', ax=ax_fitness, quantiles=30)
 
     # fitness data -- comparing ML classifiers
     _, ax_ml_fitness = plt.subplots()

@@ -31,7 +31,7 @@ class SaveData:
         '''
         self._locations[location.base_name] = location
 
-    def plot_fitness(self, loc: str, ax=None):
+    def plot_fitness(self, loc: str, ax=None, quantiles=30):
         ''' Plots the fitness of the save data in a given location '''
 
         # try to get the location of the save data
@@ -41,7 +41,7 @@ class SaveData:
         df = location.fitness_df
 
         # plot fitness data
-        plot_fitness_df(df, label=location.base_name, ax=ax)
+        plot_fitness_df(df, label=location.base_name, ax=ax, quantiles=quantiles)
 
     def plot_performance(self, loc: str, ax1=None, ax2=None, quantiles=20):
         ''' Plots the performance of the save data in a given location '''

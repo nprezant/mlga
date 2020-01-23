@@ -30,10 +30,10 @@ def _get_fitness_df_means(df, quantiles=30):
 
     return means
 
-def plot_fitness_df(df, label='Fitness', ax=None):
+def plot_fitness_df(df, label='Fitness', ax=None, quantiles=30):
 
     # get means
-    means = _get_fitness_df_means(df, 30)
+    means = _get_fitness_df_means(df, quantiles)
 
     # get color
     global cindex
