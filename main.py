@@ -41,17 +41,22 @@ if plot:
     # set up the save data
     save_data = SaveData(rnd_saves, std_saves, ml1_saves, ml2_saves, ml3_saves)
 
+    # define optimum (experimentally found)
+    optimum_fitness = 630
+
     # fitness data -- different GA types
     _, ax_fitness = plt.subplots()
     save_data.plot_fitness('Random', ax=ax_fitness, quantiles=50)
     save_data.plot_fitness('Standard', ax=ax_fitness, quantiles=50)
     save_data.plot_fitness('ML_KNN', ax=ax_fitness, quantiles=30)
+    save_data.plot_fitness_optimum(optimum_fitness, ax_fitness)
 
     # fitness data -- comparing ML classifiers
     _, ax_ml_fitness = plt.subplots()
     save_data.plot_fitness('ML_KNN', ax=ax_ml_fitness)
     save_data.plot_fitness('ML_DT', ax=ax_ml_fitness)
     save_data.plot_fitness('ML_NB', ax=ax_ml_fitness)
+    save_data.plot_fitness_optimum(optimum_fitness, ax_ml_fitness)
 
     # classifer performance data
     _, ax_good = plt.subplots()
@@ -72,7 +77,7 @@ if plot:
     _, ax_stats = plt.subplots()
     save_data.plot_convergence(
         ['Random', 'Standard', 'ML_KNN', 'ML_DT', 'ML_NB'],
-        target=630, ax=ax_stats
+        target=optimum_fitness, ax=ax_stats
     )
 
     # plot classifier performance summary

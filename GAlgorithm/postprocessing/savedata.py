@@ -43,6 +43,19 @@ class SaveData:
         # plot fitness data
         plot_fitness_df(df, label=location.base_name, ax=ax, quantiles=quantiles)
 
+    def plot_fitness_optimum(self, optimum, ax):
+        ''' Plots the optimum fitness onto an axis '''
+
+        # get the x limits of the axis
+        x = list(ax.get_xlim())
+
+        # y data is a simple straight line
+        y = [optimum, optimum]
+
+        # plot the optimum fitness
+        ax.plot(x, y, 'k--', label='Optimum')
+        ax.legend()
+
     def plot_performance(self, loc: str, ax1=None, ax2=None, quantiles=20):
         ''' Plots the performance of the save data in a given location '''
 
