@@ -20,7 +20,7 @@ def _get_fitness_df_means(df, quantiles=30):
     df = df.sort_values(INDEX)
 
     # create bins
-    df['quantile'] = pd.qcut(df[INDEX], q=30)
+    df['quantile'] = pd.qcut(df[INDEX], q=quantiles)
 
     # group by the bins
     grouped = df.groupby('quantile')
