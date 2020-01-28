@@ -124,9 +124,9 @@ class SaveLocation:
         self._f_evals_to_converge = None
         self._f_evals_to_get_target_in_pop = None
     
-    def read_convergence_stats(self, target, tolerance=0.10):
+    def read_convergence_stats(self, target, tolerance=0.10, quantiles=30):
         ''' Determine the convergence statistics '''
-        a, b = convergence_stats(self.fitness_df, target, tolerance)
+        a, b = convergence_stats(self.fitness_df, target, tolerance, quantiles)
         self._f_evals_to_converge = a
         self._f_evals_to_get_target_in_pop = b
 

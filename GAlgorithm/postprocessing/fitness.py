@@ -61,14 +61,14 @@ def plot_fitness_df(df, label='Fitness', ax=None, quantiles=30):
     ax.set_xlabel('Function Evaluations')
     ax.set_ylabel('Fitness')
         
-def convergence_stats(df, target, tolerance=0.10):
+def convergence_stats(df, target, tolerance=0.10, quantiles=30):
     ''' Gets convergence statistics
     Returns (f evals to converge, f evals to get target in population)
     Target value is optimum fitness
     '''
 
     # get means
-    means = _get_fitness_df_means(df, 30)
+    means = _get_fitness_df_means(df, quantiles)
 
     def get_first_row_with(condition, df):
         for index, row in df.iterrows():

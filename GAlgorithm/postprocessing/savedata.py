@@ -80,7 +80,7 @@ class SaveData:
         # plot individual data
         plot_fn(fp, label=fp.stem, ax=ax)
 
-    def plot_convergence(self, locs: str, target, ax=None):
+    def plot_convergence(self, locs: str, target, ax=None, tolerance=0.10, quantiles=30):
         ''' Plot the convergence of the save data in a given location '''
 
         index = []
@@ -90,7 +90,7 @@ class SaveData:
         for loc in locs:
             # try to get the location of the save data
             location: SaveLocation = self._locations[loc]
-            location.read_convergence_stats(target)
+            location.read_convergence_stats(target, tolerance=tolerance, quantiles=quantiles)
 
             index.append(location.base_name)
             optimums.append(location.f_evals_to_converge)
