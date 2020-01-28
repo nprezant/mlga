@@ -42,7 +42,7 @@ if plot:
     save_data = SaveData(rnd_saves, std_saves, ml1_saves, ml2_saves, ml3_saves)
 
     # define optimum (experimentally found)
-    optimum_fitness = 630
+    optimum_fitness = 630.5154020743051
 
     # fitness data -- different GA types
     _, ax_fitness = plt.subplots()
@@ -50,6 +50,13 @@ if plot:
     save_data.plot_fitness('Standard', ax=ax_fitness, quantiles=100)
     save_data.plot_fitness('ML_KNN', ax=ax_fitness, quantiles=30)
     save_data.plot_fitness_optimum(optimum_fitness, ax_fitness)
+
+    # convergence comparison -- different GA types
+    _, ax_stats1 = plt.subplots()
+    save_data.plot_convergence(
+        ['Standard', 'ML_KNN'],
+        target=optimum_fitness, ax=ax_stats1, tolerance=0.01, quantiles=50
+    )
 
     # fitness data -- comparing ML classifiers
     _, ax_ml_fitness = plt.subplots()
@@ -73,11 +80,15 @@ if plot:
     save_data.plot_best('ML_DT', examples.plot_individual_csv, ax_best)
     save_data.plot_best('ML_NB', examples.plot_individual_csv, ax_best)
 
+    # just one best route
+    _, ax_best1 = plt.subplots()
+    save_data.plot_best('Standard', examples.plot_individual_csv, ax_best1)
+
     # plot stats
     _, ax_stats = plt.subplots()
     save_data.plot_convergence(
-        ['Random', 'Standard', 'ML_KNN', 'ML_DT', 'ML_NB'],
-        target=optimum_fitness, ax=ax_stats
+        ['Standard', 'ML_KNN', 'ML_DT', 'ML_NB'],
+        target=optimum_fitness, ax=ax_stats, tolerance=0.01, quantiles=30
     )
 
     # plot classifier performance summary
