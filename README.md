@@ -1,20 +1,18 @@
-# Genetic Algorithm
+# A Study of the Benefits of Machine Learning Classification in the Genetic Algorithm Evolutionary Cycle
 
-A genetic algorithm solution.
+This package explores the benefits of machine learning classification in the genetic algorithm's evolutionary loop.
 
-Explores the benefit of machine learning classification in the evolutionary loop.
+## Overview
 
-## Future Work
 
-* Plot tracked variables
 
 ## Traveling Salesman Example
 
-A minimization problem. The algorithm seeks to find the shortest route for a traveling salesman to take through a set of cities.
+While the package can handle multiple problem types, we focus on the traveling salesmen, a minimization problem that seeks to find the shortest route through a set of points.
 
-### Optimization Curves
+### Overall Effectiveness
 
-The following figure compares the optimization curves between a randomly generated population, a standard genetic algorithm, and a genetic algorithm modified to use machine learning to classify "good" children and "bad" children.
+At first glance, the genetic algorithm with the machine learning classifier shows significant improvement over the standard genetic algorithm.
 
 ![Travelling Salesman](assets/travelling_salesman.png)
 
