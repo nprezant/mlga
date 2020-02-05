@@ -1,4 +1,4 @@
-The Benefits of Machine Learning Classification within the Genetic Algorithm Evolutionary Cycle:
+# The Benefits of Machine Learning Classification within the Genetic Algorithm Evolutionary Cycle:
 
 *A Case Study of the Traveling Salesman Problem*
 
@@ -6,11 +6,11 @@ The Benefits of Machine Learning Classification within the Genetic Algorithm Evo
 
 This project serves to demonstrate the effect that machine learning classifiers can have on the efficiency of genetic algorithms. The standard genetic algorithm process is shown in Figure 1. The modified algorithm process is shown in Figure 2. Note how the standard algorithm passes *all* children to the evaluation procedure, while the modified algorithm only passes *some* children to be evaluated (only the children deemed “good” by the machine learning classifier).
 
-<img src="/media/image1.png" style="width:4.52778in;height:2.18176in" />
+<img src="/media/image1.png" width="500" />
 
 Figure 1, Standard Genetic Algorithm
 
-<img src="/media/image2.png" style="width:4.54167in;height:3.10105in" />
+<img src="/media/image2.png" width="500" />
 
 Figure 2, Modified Genetic Algorithm with Machine Learning Classification
 
@@ -28,11 +28,11 @@ The traveling salesmen problem is a combinational optimization problem that answ
 
 Figure 3 shows the layout of the cities that salesmen must travel through, with the optimum route traced though it. Ten cities were randomly generated on a 200x200 grid, and the fitness is computed as the length of the route in grid units (though any number of cities on any size grid could be used; the values here were chosen to decrease overall computation time). The city layout was consistent for all genetic algorithm run data in this report. As an example, Figure 4 shows a non-optimal route through the cities.
 
-<img src="/media/image3.png" style="width:2.48834in;height:1.75in" />
+<img src="/media/image3.png" width="300" />
 
 Figure 3, Traveling Salesmen City Layout with Optimal Route Traced
 
-<img src="/media/image4.png" style="width:2.39325in;height:1.70139in" />
+<img src="/media/image4.png" width="300" />
 
 Figure 4, Traveling Salesmen City Layout with Non-Optimal Route
 
@@ -62,7 +62,7 @@ Table 2, Additional Machine Learning Genetic Algorithm Parameters
 
 Figure 5 shows a comparison of the standard algorithm with the modified algorithm. A “random” algorithm is also shown for reference. The random algorithm finds solutions by randomly generating 100 individuals at a time, evaluating them, then culling with the previous 100 to maintain population size. Each algorithm was run separately a total of 100 times each and Figure 5 displays the overall mean fitness values and distributions of those runs.
 
-<img src="/media/image5.png" style="width:4.33817in;height:3.11458in" />
+<img src="/media/image5.png" width="300" />
 
 Figure 5, Fitness Curve Comparison of Genetic Algorithms
 
@@ -76,7 +76,7 @@ The **Discovered Optimum** is the number of function evaluations taken for the o
 
 The machine learning algorithm both discovers the optimum solution sooner (by ≈6,000 function evaluations) and, once it has found the optimum, converges on it sooner (by about ≈1,000 function evaluations).
 
-<img src="/media/image6.png" style="width:4.11428in;height:2.94531in" />
+<img src="/media/image6.png" width="300" />
 
 Figure 6, Convergence Comparison of Genetic Algorithms
 
@@ -108,13 +108,13 @@ These inaccuracies were tracked and can be seen plotted in Figure 7. For this ex
 
 The comparison of average classifier performance between the K-Nearest Neighbors, Gaussian Naïve Bayes, and Decision Tree algorithms is plotted in Figure 7. Detailed tracking of the classifier prediction performance over the course of the population’s evolution is shown in Figure 8.
 
-<img src="/media/image7.png" style="width:3.97143in;height:3.22297in" />
+<img src="/media/image7.png" width="400" />
 
 Figure 7, Average Classifier Performance Comparison
 
 While the Gaussian Naïve Bayes algorithm (shown in Figure 7) clearly has the greatest accuracy in predicting good children, it also has the worst accuracy predicting bad children. As discussed previously, the ability of the classifier to accurately predict *bad* children is more critical to the classifier’s success, as failing to do so results in the algorithm discarding useful child solutions. Though, the Naïve Bayes algorithm is *much* better at predicting good children than the others, while only *slightly* worse at predicting bad children. Different problem types will have different optimum classifiers, and the choice of classifier should be left to the user as an algorithm input parameter.
 
-<img src="/media/image8.png" style="width:3.02853in;height:2.45in" /><img src="/media/image9.png" style="width:3.0549in;height:2.47917in" />
+<img src="/media/image8.png" width="300" /><img src="/media/image9.png" width="300" />
 
 Figure 8, Detailed Classifier Performance Comparison
 
@@ -124,11 +124,11 @@ All classifiers start out able to very accurately classify bad children: \>95%. 
 
 Despite these differences in accuracy, there is little discrepancy in the actual fitness of the results (Figure 9). If we were to find the area under these fitness curves, we would likely find that the Naïve Bayes classifier slightly outperformed the KNN and Decision Tree classifiers. All classifiers both discover the optimum solution and converge upon it with roughly the same number of function evaluations (Figure 10). Again, Naïve Bayes slightly outperforms the others.
 
-<img src="/media/image10.png" style="width:4.38333in;height:3.56848in" />
+<img src="/media/image10.png" width="400"/>
 
 Figure 9, Fitness Curve Comparison Across Machine Learning Classifiers
 
-<img src="/media/image11.png" style="width:4.54286in;height:3.45833in" />
+<img src="/media/image11.png" width="400" />
 
 Figure 10, Convergence Comparison Across Machine Learning Classifiers
 
@@ -146,18 +146,18 @@ Changing the machine learning classifier does little to influence the convergenc
 
 [^2]: The classifier performance is currently tracked on a binary, low fidelity scale, such that the classifier would be marked completely wrong for classifying an individual that was *just barely* not good enough. When manually stepping through the code, I saw that misclassifications were often *just barely* in nature.
 
-    For example:
+For example:
     
-    A given set of training data has a 40% cutoff fitness threshold of 880 km.
-    
-    One of the children generated has a fitness of 879 km.
-    
-    The classifier classified this child as “bad” and was penalized for it when calculating its accuracy (since technically, the child was better than the threshold, and “good”).
-    
-    Future experiments could include some kind of “good faith tolerance” when calculating classifier performance such that these small misclassifications are not weighted the same as a more egregious error. Perhaps misclassifications within 5% of the threshold could be tracked as a separate variable, or even better, the percent of how far the misclassified individual was from the threshold could be tracked as a continuous variable and plotted separately. This way, we could see the distribution of where most “Classified as Bad but Actually Good” (and vice versa) individuals fall on the fitness scale relative to their threshold value.
+* A given set of training data has a 40% cutoff fitness threshold of 880 km.
+  
+* One of the children generated has a fitness of 879 km.
+  
+* The classifier classified this child as “bad” and was penalized for it when calculating its accuracy (since technically, the child was better than the threshold, and “good”).
+
+Future experiments could include some kind of “good faith tolerance” when calculating classifier performance such that these small misclassifications are not weighted the same as a more egregious error. Perhaps misclassifications within 5% of the threshold could be tracked as a separate variable, or even better, the percent of how far the misclassified individual was from the threshold could be tracked as a continuous variable and plotted separately. This way, we could see the distribution of where most “Classified as Bad but Actually Good” (and vice versa) individuals fall on the fitness scale relative to their threshold value.
 
 [^3]: Genetic algorithms will sometimes converge pre-maturely on local optimum, and not be able to find a path from that optimum to the global optimum if they are too far apart in the solution space. The algorithm in this experiment had a feature that would give an “extra kick” to the population whenever it appeared to converge (determined by how much progress had been made in the most recent generations). This extra kick effectively shakes the population up by greatly increasing the mutation rate in an attempt to dislodge itself from a local optimum.
 
-    I noticed that the Naïve Bayes classifier tended to invoke this feature *much* more often than the other classifiers which may have led to longer computational time on my machine while maintaining low objective function counts overall. 
-    
-    Future experiments could track the number of times this feature is invoked in each population. From that data, one could see whether any one classifier is more likely to converge locally than another, and also whether this local convergence combined with the “extra kick” is correlated with lower function evaluations overall.
+I noticed that the Naïve Bayes classifier tended to invoke this feature *much* more often than the other classifiers which may have led to longer computational time on my machine while maintaining low objective function counts overall. 
+
+Future experiments could track the number of times this feature is invoked in each population. From that data, one could see whether any one classifier is more likely to converge locally than another, and also whether this local convergence combined with the “extra kick” is correlated with lower function evaluations overall.
