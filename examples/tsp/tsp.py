@@ -1,49 +1,54 @@
 # -*- coding: utf-8 -*-
 
-import json
 from pathlib import Path
+
+from sklearn.naive_bayes import GaussianNB
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.tree import DecisionTreeClassifier
 
 from GAlgorithm import (
     GeneticAlgorithm,
-    dump,
-    fitness_plot)
+    fitness_plot,
+    SaveLocation,
+    Algorithm
+)
 
 from .population import (
     City,
     Route, 
     compute_fitness,
     random_population,
-    make_training_data)
+    make_training_data
+)
 
 from .evolution import (
     crossover, 
-    mutate)
+    mutate
+)
     
 from .plot import plot_histories
+from .io import read_cities
 
-DEFAULT_SAVE_DIRECTORY = 'data'
 
-def decode_route(dct):
-    '''reads in the starter cities from a saved file'''
-    cities = []
-    for city in dct['_genes']:
-        cities.append(City(city['x'], city['y']))
-    return cities
+DEFAULT_SAVES = SaveLocation(
+    Path().cwd() / Path('data'),
+    'Default',
+)
 
-def read_cities(fp):
-    with open(fp) as f:
-        cities_dict = json.load(f)
-    cities = decode_route(cities_dict)
-    return random_population(cities,100)
+    
+def make_initial_population(cities_fp, size):
+    cities = read_cities(cities_fp)
+    return random_population(cities, size)
 
 GA_ARGS = {
-    'initial_population': read_cities('cities\\starter_cities10.txt'),
+    'initial_population': make_initial_population('cities\\10cities.txt', 100),
     'fitness_function': compute_fitness,
-    'training_data_function' :  make_training_data,
+    'training_data_function': make_training_data,
     'tourny_size': 2, 
     'mutation_rate': 0.05,
-    'f_eval_max': 5000,
+    'f_eval_max': 50000,
     'classifier_percentage': 0.25,
+    'classifier_class': KNeighborsClassifier,
     'crossover_fn': crossover,
     'mutate_fn': mutate
 }
@@ -63,69 +68,36 @@ def run_comparison():
     fitness_plot([(hist1, 'GA'), (hist2, 'GA with ML')], 'Travelling Salesman Problem')
     plot_histories([(hist1, 'GA'), (hist2, 'GA with ML')])
 
-def run_standard(num_iterations=1, save_directory=DEFAULT_SAVE_DIRECTORY):
-   
+def run(iterations=1, saves=DEFAULT_SAVES,  algorithm=Algorithm.STANDARD, **kwargs):
+
+    # update the GA input parameters
+    GA_ARGS.update(kwargs)
+
+    # initialize the GA
     ga = GeneticAlgorithm(**GA_ARGS)
     
-    Path(save_directory).mkdir(parents=True, exist_ok=True)
+    # ensure that the save directory exists
+    saves.base_folder.mkdir(parents=True, exist_ok=True)
 
-    ga.write_params(Path(save_directory) / Path('_params.txt'))
+    # write out the GA parameters
+    ga.write_params(saves.params_fp())
 
-    for n in range(num_iterations):
+    # iterate the GA
+    for n in range(iterations):
 
-        fp = Path(save_directory) / Path(f'StandardRun{n}.txt')
-        fp.touch()
+        # run the GA, depending on algorithm option
+        if algorithm == Algorithm.STANDARD:
+            ga.run()
+        elif algorithm == Algorithm.RANDOM:
+            ga.run_random()
+        elif algorithm == Algorithm.ML:
+            ga.classifer_vars_fp = saves.performance_fp(n)
+            ga.run_with_ml()
+        else:
+            raise KeyError()
 
-        ga.run()
-        ga.pop_history.to_csv(fp)
+        # save the population history
+        ga.pop_history.to_csv(saves.run_fp(n))
 
-def run_ml_mod(num_iterations=1, save_directory=DEFAULT_SAVE_DIRECTORY):
-    
-    ga = GeneticAlgorithm(**GA_ARGS)
-
-    Path(save_directory).mkdir(parents=True, exist_ok=True)
-
-    ga.write_params(Path(save_directory) / Path('_params.txt'))
-    
-    for n in range(num_iterations):
-
-        plot_fp = Path(save_directory) / Path(f'MLRun{n}.txt')
-        plot_fp.touch()
-
-        classifier_vars_fp = Path(save_directory) / Path(f'MLClassifierVarsRun{n}.txt')
-        classifier_vars_fp.touch()
-
-        ga.classifer_vars_fp = classifier_vars_fp
-        ga.run_with_ml()
-        ga.pop_history.to_csv(plot_fp)
-
-def run_random(num_iterations=1, save_directory=DEFAULT_SAVE_DIRECTORY):
-    
-    ga = GeneticAlgorithm(**GA_ARGS)
-
-    Path(save_directory).mkdir(parents=True, exist_ok=True)
-
-    ga.write_params(Path(save_directory) / Path('_params.txt'))
-    
-    for n in range(num_iterations):
-
-        plot_fp = Path(save_directory) / Path(f'RandomRun{n}.txt')
-        plot_fp.touch()
-
-        ga.run_random()
-        ga.pop_history.to_csv(plot_fp)
-
-def make_cities(numcities: int):
-    cities = [City().randomize(0,200,0,200) for i in range(numcities)]
-    route = Route(cities)
-    return route
-
-def write_cities(numcities: int):
-    route = make_cities(numcities)
-    dump(route, f'cities\\newcity{numcities}.txt')
-
-
-if __name__ == '__main__':
-
-    run_comparison()
-    #make_cities(30)
+        # save the best individual in this run
+        ga.pop_history[-1].best_individual.to_csv(saves.best_fp(n))

@@ -4,25 +4,18 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from scipy.optimize import curve_fit
 
-FILL_COLOR = '#ff975790'
-LINE_COLOR = '#e34234'
+from .plotoptions import COLORS
 
-def plot_classifier_run_data(folder, pattern):
-    '''Plots the variables tracked by a ML runs'''
-    
-    folder = Path(folder)
+cindex = 0
 
-    df = pd.DataFrame()
 
-    for fp in folder.glob(pattern):
-        _df = pd.read_csv(fp, sep='\t', header=1)
-
-        if len(df) == 0:
-            df = _df
-        else:
-            df = pd.concat((df, _df))
+def plot_performance_df(
+    df, label='Performance',
+    ax1=None, ax2=None,
+    quantiles=20,
+):
+    '''Plots the ability of the classifier to predict good/bad children'''
     
     # define name of index column for convenience
     index = 'FunctionEvaluation'
@@ -31,7 +24,7 @@ def plot_classifier_run_data(folder, pattern):
     df = df.sort_values(index)
 
     # create 10 bins
-    df['quantile'] = pd.qcut(df[index], q=20)
+    df['quantile'] = pd.qcut(df[index], q=quantiles)
 
     # group by the bins
     grouped = df.groupby('quantile')
@@ -50,26 +43,52 @@ def plot_classifier_run_data(folder, pattern):
     good_upper = means[good_perc] + stds[good_perc]
     good_lower = means[good_perc] - stds[good_perc]
 
+    # switch axis based on input value
+    if ax1 is None:
+        ax1 = plt
+        ax1_arg = None
+    else:
+        ax1_arg = ax1
+
+    # get color
+    global cindex
+    try:
+        color = COLORS[cindex]
+    except IndexError:
+        cindex = 0
+        color = COLORS[cindex]
+    finally:
+        cindex += 1
+
     # good predictor figure
-    fig, ax = plt.subplots()
-    plt.ylim(0,1)
-    plt.title('Classifier Accuracy of Predicting Good Children')
-    plt.ylabel('Percentage')
-    plt.fill_between(means[index], good_upper, good_lower, color=FILL_COLOR)
-    means.plot(x=index, y='GoodPredictorPercentage', c=LINE_COLOR, ax=ax)
+    ax1.fill_between(means[index], good_upper, good_lower, color=color, alpha=0.3)
+    means.plot(x=index, y='GoodPredictorPercentage', label=label, c=color, ax=ax1_arg)
+
+    # axis settings
+    ax1.set_ylim(0,1)
+    ax1.set_title('Classifier Accuracy of Predicting Good Children')
+    ax1.set_xlabel('Function Evaluation')
+    ax1.set_ylabel('Percentage')
 
     # Upper/lower ounds of bad predictor percentages
     bad_upper = means[bad_perc] + stds[bad_perc]
     bad_lower = means[bad_perc] - stds[bad_perc]
 
-    # bad predictor figure
-    fig, ax = plt.subplots()
-    plt.ylim(0,1)
-    plt.title('Classifier Accuracy of Predicting Bad Children')
-    plt.ylabel('Percentage')
-    plt.fill_between(means[index], bad_upper, bad_lower, color=FILL_COLOR)
-    means.plot(x=index, y='BadPredictorPercentage', c=LINE_COLOR, ax=ax)
+    # switch axis based on input value
+    if ax2 is None:
+        ax2 = plt
+        ax2_arg = None
+    else:
+        ax2_arg = ax2
 
-    # show plots
-    plt.show()
+    # bad predictor figure
+    ax2.fill_between(means[index], bad_upper, bad_lower, color=color, alpha=0.3)
+    means.plot(x=index, y='BadPredictorPercentage', label=label, c=color, ax=ax2_arg)
+
+    # axis settings
+    ax2.set_ylim(0,1)
+    ax2.set_title('Classifier Accuracy of Predicting Bad Children')
+    ax2.set_xlabel('Function Evaluation')
+    ax2.set_ylabel('Percentage')
+    
     

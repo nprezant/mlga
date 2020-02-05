@@ -1,1 +1,2 @@
-from .tsp import run_comparison, run_standard, run_ml_mod, run_random
+from .tsp import run
+from .plot import plot_individual_csv

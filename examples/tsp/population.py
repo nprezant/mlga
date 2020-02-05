@@ -26,6 +26,13 @@ class Route(Individual):
         '''returns y as a list of city data y coordinates'''
         return [city.y for city in self.genes] + [self.genes[0].y]
 
+    def to_csv(self, fp):
+        '''Writes out identifying data for this route to a CSV file'''
+        with open(fp, 'w') as f:
+            f.write('x\ty\n')
+            for city in self.genes:
+                f.write(f'{city.x}\t{city.y}\n')
+
 
 def make_training_data(route):
     '''Converts the route into a list of number to be used as training data
