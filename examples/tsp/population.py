@@ -2,7 +2,7 @@
 
 import random
 
-from GAlgorithm import Individual, Population, Objective
+from mlga import Individual, Population, Objective
 
 
 Population.objective_type = Objective.MINIMIZE

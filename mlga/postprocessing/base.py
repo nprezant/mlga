@@ -5,7 +5,7 @@ from enum import Enum
 
 import pandas as pd
 
-from GAlgorithm import Population, Objective
+from mlga import Population, Objective
 from .fitness import convergence_stats
 
 

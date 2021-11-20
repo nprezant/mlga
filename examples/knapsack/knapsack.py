@@ -1,7 +1,7 @@
 
 import random
 
-from GAlgorithm import (
+from mlga import (
     Population, 
     GeneticAlgorithm, 
     initialize_population,

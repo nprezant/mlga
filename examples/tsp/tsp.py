@@ -6,7 +6,7 @@ from sklearn.naive_bayes import GaussianNB
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.tree import DecisionTreeClassifier
 
-from GAlgorithm import (
+from mlga import (
     GeneticAlgorithm,
     fitness_plot,
     SaveLocation,
@@ -41,7 +41,7 @@ def make_initial_population(cities_fp, size):
     return random_population(cities, size)
 
 GA_ARGS = {
-    'initial_population': make_initial_population('cities\\10cities.txt', 100),
+    'initial_population': make_initial_population('cities/10cities.txt', 100),
     'fitness_function': compute_fitness,
     'training_data_function': make_training_data,
     'tourny_size': 2, 

@@ -1,6 +1,7 @@
 __pycache__
 .vs
 .vscode
+.venv
 
 data*
 research

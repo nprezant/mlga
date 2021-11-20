@@ -9,13 +9,13 @@ from sklearn.tree import DecisionTreeClassifier
 
 import examples
 
-from GAlgorithm import (
+from mlga import (
     SaveLocation,
     SaveData,
     Algorithm
 )
 
-n = 100
+n = 10
 folder = Path().cwd() / Path(f'data{n}')
 
 rnd_saves = SaveLocation(folder, 'Random')
@@ -24,7 +24,7 @@ ml1_saves = SaveLocation(folder, 'ML_KNN')
 ml2_saves = SaveLocation(folder, 'ML_DT')
 ml3_saves = SaveLocation(folder, 'ML_NB')
 
-run = False
+run = True
 plot = True
 
 # generate GA run data

@@ -2,7 +2,7 @@
 
 import random
 
-from GAlgorithm import Individual, Population
+from mlga import Individual, Population
 
 from .population import Route
 
